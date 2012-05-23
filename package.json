@@ -9,4 +9,9 @@
   , "devDependencies": {
         "browserbuild": "~0.4.9"
     }
+  , "component": {
+      "scripts": {
+        "mydb": "./dist/mydb.js"
+      }
+    }
 }
