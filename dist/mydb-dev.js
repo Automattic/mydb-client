@@ -127,6 +127,7 @@ if (window.localStorage) debug.enable(localStorage.debug);function require(p, pa
 
 var util = require('./util')
   , fiddle = require('./fiddle')
+  , dref = require('./fiddle/dref')
   , EventEmitter = require('./event-emitter')
   , debug = require('debug')('mydb-client')
 
@@ -175,23 +176,153 @@ Document.prototype.onPayload = function (obj) {
 /**
  * Handles an operation.
  *
+ * @param {Object} modifier(s) object
+ * @param {Boolean} whether the operation is implicit
  * @api private
  */
 
-Document.prototype.onOp = function (mod) {
-  for (var i in mod) {
-    if (mod.hasOwnProperty(i)) {
-      if ('$' == i.charAt(0)) {
-        for (var ii in mod[i]) {
-          if (mod.hasOwnProperty(ii)) {
-            this.ops.emit(i + ':' + ii, mod[i][ii]);
+Document.prototype.onOp = function (mod, implicit) {
+  debug('got %soperation %j', implicit ? 'implicit ' : '', mod);
+
+  // convert pushAll to many individual push operations
+  if (mod.$pushAll) {
+    var all = mod.$pushAll;
+    delete mod.$pushAll;
+    for (var key in all) {
+      for (var i = 0, l = all[key].length; i < l; i++) {
+        var newMod = { $push: {} };
+        newMod.$push[key] = all[key][i];
+        this.onOp(newMod, true);
+      }
+    }
+  }
+
+  // convert addToSet to push if effective, otherwise emit noop
+  if (mod.$addToSet) {
+    var add = mod.$addToSet;
+    delete mod.$addToSet;
+    for (var key in add) {
+      if (add.hasOwnProperty(key)) {
+        if (add[key].$each) {
+          debug('transforming $addToSet each into multiple operations');
+          for (var i = 0, l = add[key].$each.length; i < l; i++) {
+            var m = { $addToSet: {} };
+            m.$addToSet[key] = add[key].$each[i];
+            this.onOp(m, true);
+          }
+        } else {
+          var arr = dref.get(this.obj, key) || []
+            , len = arr.length
+            , m = { $addToSet: {} }
+
+          m.$addToSet[key] = add[key];
+
+          debug('existing set "%s" has %d elements', key, len);
+
+          try {
+            fiddle(m, null, this.obj);
+          } catch (e) {
+            this.emit('error', e);
+          }
+
+          debug('len comparison', len, dref.get(this.obj, key).length);
+          if (len != dref.get(this.obj, key).length) {
+            debug('addToSet push');
+            this.ops.emit('$push:' + key, add[key]);
+          } else {
+            debug('addToSet noop');
+            this.emit('noop', m);
           }
         }
       }
     }
   }
 
+  var self = this;
+
+  // capture $pull and $pullAll
+  ['$pull', '$pullAll'].forEach(function (op) {
+    if (mod[op]) {
+      for (var key in mod[op]) {
+        if (mod[op].hasOwnProperty(key)) {
+          (function (k) {
+            var m = {};
+            m[op] = {};
+            m[op][key] = mod[op][key];
+            var ret = fiddle(m, null, self.obj, function (v) {
+              self.ops.emit('$pull:' + key, v);
+            });
+            if (false === ret) {
+              self.emit('error', new Error(key + ' is not an array'));
+            }
+          })(key);
+        }
+      }
+      delete mod[op];
+    }
+  });
+
+  // capture $pop and fire pull events
+  if (mod.$pop) {
+    for (var key in mod.$pop) {
+      if (mod.$pop.hasOwnProperty(key)) {
+        (function (k) {
+          var m = { $pop: {} };
+          m.$pop[key] = mod.$pop[key];
+          var ret = fiddle(m, null, self.obj, function (v) {
+            if (undefined !== v) {
+              self.ops.emit('$pull:' + key, v);
+            }
+          });
+          if (false === ret) {
+            self.emit('error', new Error(key + ' is not an array'));
+          }
+        })(key);
+      }
+    }
+    delete mod.$pop;
+  }
+
+  // rename as an $unset followed by a $set
+  if (mod.$rename) {
+    for (var key in mod.$rename) {
+      if (mod.$rename.hasOwnProperty(key)) {
+        (function (k) {
+          var unsetOp = { $unset: {} }
+            , setOp = { $set: {} }
+          unsetOp.$unset[k] = 1;
+          setOp.$set[mod.$rename[k]] = dref.get(self.obj, k);
+          self.onOp(unsetOp, true);
+          self.onOp(setOp, true);
+          self.ops.emit('$rename:' + k, mod.$rename[k]);
+        })(key);
+      }
+    }
+    delete mod.$rename;
+  }
+
+  if (!util.keys(mod).length) {
+    return debug('ignoring empty operation');
+  }
+
+  // emit doc `op` event
+  this.emit('op', mod, implicit);
+
+  // apply transformations
   fiddle(mod, null, this.obj);
+
+  // emit ops events
+  for (var i in mod) {
+    if (mod.hasOwnProperty(i)) {
+      if ('$' == i.charAt(0)) {
+        for (var ii in mod[i]) {
+          if (mod[i].hasOwnProperty(ii)) {
+            self.ops.emit(i + ':' + ii, mod[i][ii]);
+          }
+        }
+      }
+    }
+  }
 };
 
 /**
@@ -220,16 +351,16 @@ Operations.prototype.on = function (key, op, fn) {
     op = '$' + op;
   }
 
-  return EventEmitter.prototype.on.call(op + ':' + key, fn);
+  return EventEmitter.prototype.on.call(this, op + ':' + key, fn);
 };
 
 /**
- * Overrides removeListener to allow operations.
+ * Overrides once to allow operations.
  *
  * @api public
  */
 
-Operations.prototype.removeListener = function (key, op, fn) {
+Operations.prototype.once = function (key, op, fn) {
   if ('function' == typeof op) {
     fn = op;
     op = '$set';
@@ -237,7 +368,18 @@ Operations.prototype.removeListener = function (key, op, fn) {
     op = '$' + op;
   }
 
-  return EventEmitter.prototype.removeListener.call(op + ':' + key, fn);
+  var name = op + ':' + key
+    , self = this;
+
+  function on () {
+    EventEmitter.prototype.removeListener.call(this, name, on);
+    fn.apply(this, arguments);
+  };
+
+  on.listener = fn;
+  EventEmitter.prototype.on.call(this, name, on);
+
+  return this;
 };
 
 });require.register("event-emitter.js", function(module, exports, require, global){
@@ -416,6 +558,7 @@ EventEmitter.prototype.emit = function (name) {
  * Converts enumerable to Array.
  *
  * @param {Object} array-like object
+ * @return {Array} array
  * @api private
  */
 
@@ -427,6 +570,18 @@ function toArray (obj) {
   }
 
   return arr;
+};
+
+/**
+ * Checks for Array type.
+ *
+ * @param {Object} object
+ * @return {Boolean} whether the obj is an array
+ * @api private
+ */
+
+var isArray = Array.isArray || function isArray (obj) {
+  return '[object Array]' == Object.prototype.toString.call(obj);
 };
 
 });require.register("fiddle/clone.js", function(module, exports, require, global){
@@ -632,7 +787,7 @@ function objEquiv(a, b) {
 var _findValues = function(keyParts, target, create, index, values) {
 
   if(!values) {
-    keyParts = keyParts instanceof Array ? keyParts : keyParts.split(".");
+    keyParts = Array.isArray(keyParts) ? keyParts : keyParts.split(".");
     values = [];
     index = 0;
   }
@@ -640,7 +795,7 @@ var _findValues = function(keyParts, target, create, index, values) {
   var ct, i, j, kp, pt = target;
 
 
-  for(i = index, n = keyParts.length; i < n; i++) {
+  for(var i = index, n = keyParts.length; i < n; i++) {
     kp = keyParts[i];
     ct = pt[kp];
 
@@ -739,28 +894,26 @@ var modifiers = {
    */
 
   $push: function(target, field, value) {
-    var ov = target[field] || [];
+    var ov = target[field] || (target[field] = []);
     ov.push(value);
-    target[field] = ov;
   },
 
   /**
    */
 
   $pushAll: function(target, field, value) {
-    var ov = target[field] || [];
+    var ov = target[field] || (target[field] = []);
 
     for(var i = 0, n = value.length; i < n; i++) {
       ov.push(value[i]);
     }
-    target[field] = ov;
   },
 
   /**
    */
 
   $addToSet: function(target, field, value) {
-    var ov = target[field] || [],
+    var ov = target[field] || (target[field] = []),
     each = value.$each || [value];
 
     for(var i = 0, n = each.length; i < n; i++) {
@@ -773,42 +926,69 @@ var modifiers = {
   /**
    */
 
-  $pop: function(target, field, value) {
+  $pop: function(target, field, value, fn) {
     var ov = target[field];
-    if(!ov) return;
+    if (!Array.isArray(ov)) return false;
+    if (!ov.length) return;
+    var v;
     if(value == -1) {
-      ov.splice(0, 1);
+      v = ov.shift();
     } else {
-      ov.pop();
+      v = ov.pop();
+    }
+    if (fn) {
+      fn(v);
     }
   },
 
   /**
    */
 
-  $pull: function(target, field, value) {
+  $pull: function(target, field, value, fn) {
     var ov = target[field];
-    if(!ov) return;
+    if (!Array.isArray(ov)) return false;
+    if (!ov.length) return;
     var newArray = [],
     sifter = sift(value);
 
 
-    target[field] = ov.filter(function(v) {
-      return !sifter.test(v);
-    });
+    var filteredCount = 0, v, filtered, index
+    for (var i = 0, l = ov.length; i < l; i++) {
+      index = i - filteredCount;
+      v = ov[index];
+      filtered = sifter.test(v);
+      if (filtered) {
+        ov.splice(index, 1);
+        filteredCount++;
+        if (fn) {
+          fn(v);
+        }
+      }
+    }
   },
 
   /**
    */
 
-  $pullAll: function(target, field, value) {
+  $pullAll: function(target, field, value, fn) {
 
     var ov = target[field];
-    if(!ov) return;
+    if (!Array.isArray(ov)) return false;
+    if (!ov.length) return;
 
-    target[field] = ov.filter(function(v) {
-      return deepIndexOf(value, v) == -1;
-    })
+    var filteredCount = 0, v, filtered, index;
+    for (var i = 0, l = ov.length; i < l; i++) {
+      index = i - filteredCount;
+      v = ov[index];
+      filtered = deepIndexOf(value, v) != -1;
+      if (filtered) {
+        ov.splice(index, 1);
+        filteredCount++;
+        if (fn) {
+          fn(v);
+        }
+      }
+    }
   },
 
   /**
@@ -861,7 +1041,7 @@ var parse = function(modify) {
     
   }
 
-  return function(target) {
+  return function(target, fn) {
     for(key in modify) {
       var modifier = modifiers[key];
       if(!modifier) continue;
@@ -873,9 +1053,10 @@ var parse = function(modify) {
         targetKey = keyParts.pop();
 
         var targets = dref.get(target, keyParts);
+        if (!Array.isArray(targets)) targets = [targets];
 
         for(var i = targets.length; i--;) {
-          modifier(targets[i], targetKey, v[key2]);
+          modifier(targets[i], targetKey, v[key2], fn);
         }
       }
     } 
@@ -890,14 +1071,14 @@ var fiddler = function(modifiers, filter) {
   var modify = parse(modifiers), sifter;
   if(filter) sifter = sift(filter);
 
-  return function(target) {
+  return function(target, fn) {
     var targets = target instanceof Array ? target : [target],
     modified = false;
 
     for(var i = targets.length; i--;) {
       var tg = targets[i];
       if(!sifter || sifter.test(tg)) {
-        modify(tg);
+        modify(tg, fn);
         modified = true;
       }
     }
@@ -909,11 +1090,11 @@ var fiddler = function(modifiers, filter) {
 /**
  */
 
-var fiddle = module.exports = function(modifiers, filter, target) {
+var fiddle = module.exports = function(modifiers, filter, target, fn) {
 
   var fdlr = fiddler(modifiers, filter);
 
-  if(target) return fdlr(target);
+  if(target) return fdlr(target, fn);
 
   return fdlr;
 }
@@ -1481,13 +1662,23 @@ function Manager (socket) {
 
   debug('initialized client for sid "%s"', this.sid);
 
-  return bind(this.doc, this);
+  var fn = bind(this.doc, this);
+
+  // cross-browser `fn.__proto__ = this` equivalent
+  fn.doc = fn;
+  for (var i in Manager.prototype) {
+    if (Manager.prototype.hasOwnProperty(i) && !fn[i]) {
+      fn[i] = bind(this[i], this);
+    }
+  }
+  return fn;
 }
 
 /**
  * Selects a document.
  *
- * @api private
+ * @return {Document}
+ * @api public
  */
 
 Manager.prototype.doc = function (name, fn) {
@@ -1497,7 +1688,7 @@ Manager.prototype.doc = function (name, fn) {
     this.docs[name] = doc;
     doc.on('payload', fn);
   }
-  return this;
+  return doc;
 };
 
 });require.register("mydb.js", function(module, exports, require, global){
@@ -1539,5 +1730,23 @@ exports.inherits = function (ctor, ctorB) {
   ctor.prototype = new a;
 }
 
-});mydb = require('mydb');
+/**
+ * Gets an array of object keys.
+ *
+ * @param {Object} object
+ * @return {Array} keys
+ * @api public
+ */
+
+exports.keys = Object.keys || function keys (obj) {
+  var keys = [];
+  for (var i in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, i)) {
+      keys.push(i);
+    }
+  }
+  return keys;
+}
+
+});if ("undefined" != typeof module) { module.exports = require('mydb'); } else { mydb = require('mydb'); }
 })();
