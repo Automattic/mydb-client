@@ -29,8 +29,8 @@ function Document (manager, name) {
   this.manager = manager;
   this.socket = manager.socket;
   this.socket.emit('db', manager.sid, name);
-  this.socket.on('payload', util.bind(this.onPayload, this));
-  this.socket.on('op', util.bind(this.onOp, this));
+  this.socket.on(name + '#payload', util.bind(this.onPayload, this));
+  this.socket.on(name + '#op', util.bind(this.onOp, this));
   this.ops = new Operations;
 }
 
