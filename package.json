@@ -1,6 +1,6 @@
 {
     "name": "mydb-client"
-  , "version": "0.1.0"
+  , "version": "0.1.1"
   , "main": "./lib/mydb"
   , "dependencies": {
         "socket.io-client": "0.9.x"

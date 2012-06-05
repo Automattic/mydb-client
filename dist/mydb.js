@@ -53,6 +53,16 @@ Document.prototype.onPayload = function (obj) {
 }
 
 /**
+ * Gets a key.
+ *
+ * @api public
+ */
+
+Document.prototype.get = function (key) {
+  return dref.get(this.obj, key);
+};
+
+/**
  * Handles an operation.
  *
  * @param {Object} modifier(s) object
@@ -197,6 +207,9 @@ Document.prototype.onOp = function (mod, implicit) {
         for (var ii in mod[i]) {
           if (mod[i].hasOwnProperty(ii)) {
             self.ops.emit(i + ':' + ii, mod[i][ii]);
+            if ('$set' != i) {
+              self.ops.emit('$set:' + ii, mod[i][ii]);
+            }
           }
         }
       }
