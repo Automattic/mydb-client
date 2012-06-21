@@ -1,4 +1,10 @@
 
+0.2.0 / 2012-06-21
+==================
+
+  * Added Document#ready.
+  * Merged document and emitter.
+
 0.1.1 / 2012-06-06
 ==================
 

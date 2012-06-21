@@ -138,6 +138,14 @@ var util = require('./util')
 module.exports = Document;
 
 /**
+ * White-listed events.
+ *
+ * @api private
+ */
+
+var events = ['payload', 'op', 'error', 'noop'];
+
+/**
  * Database constructor
  *
  * @param {Manager} manager
@@ -152,7 +160,7 @@ function Document (manager, name) {
   this.socket.emit('db', manager.sid, name);
   this.socket.on(name + '#payload', util.bind(this.onPayload, this));
   this.socket.on(name + '#op', util.bind(this.onOp, this));
-  this.ops = new Operations;
+  this.isReady = false;
 }
 
 /**
@@ -169,18 +177,24 @@ util.inherits(Document, EventEmitter);
 
 Document.prototype.onPayload = function (obj) {
   debug('got payload %j', obj);
-  this.obj = obj;
-  this.emit('payload', this.obj, this.ops);
+  for (var i in obj) {
+    if (obj.hasOwnProperty(i)) {
+      this[i] = obj[i];
+    }
+  }
+  this.isReady = true;
+  this.emit('payload');
 }
 
 /**
  * Gets a key.
  *
+ * @return {Object} value
  * @api public
  */
 
 Document.prototype.get = function (key) {
-  return dref.get(this.obj, key);
+  return dref.get(this, key);
 };
 
 /**
@@ -221,7 +235,7 @@ Document.prototype.onOp = function (mod, implicit) {
             this.onOp(m, true);
           }
         } else {
-          var arr = dref.get(this.obj, key) || []
+          var arr = dref.get(this, key) || []
             , len = arr.length
             , m = { $addToSet: {} }
 
@@ -230,15 +244,15 @@ Document.prototype.onOp = function (mod, implicit) {
           debug('existing set "%s" has %d elements', key, len);
 
           try {
-            fiddle(m, null, this.obj);
+            fiddle(m, null, this);
           } catch (e) {
             this.emit('error', e);
           }
 
-          debug('len comparison', len, dref.get(this.obj, key).length);
-          if (len != dref.get(this.obj, key).length) {
+          debug('len comparison', len, dref.get(this, key).length);
+          if (len != dref.get(this, key).length) {
             debug('addToSet push');
-            this.ops.emit('$push:' + key, add[key]);
+            this.emit('$push:' + key, add[key]);
           } else {
             debug('addToSet noop');
             this.emit('noop', m);
@@ -259,8 +273,8 @@ Document.prototype.onOp = function (mod, implicit) {
             var m = {};
             m[op] = {};
             m[op][key] = mod[op][key];
-            var ret = fiddle(m, null, self.obj, function (v) {
-              self.ops.emit('$pull:' + key, v);
+            var ret = fiddle(m, null, self, function (v) {
+              self.emit('$pull:' + key, v);
             });
             if (false === ret) {
               self.emit('error', new Error(key + ' is not an array'));
@@ -279,9 +293,9 @@ Document.prototype.onOp = function (mod, implicit) {
         (function (k) {
           var m = { $pop: {} };
           m.$pop[key] = mod.$pop[key];
-          var ret = fiddle(m, null, self.obj, function (v) {
+          var ret = fiddle(m, null, self, function (v) {
             if (undefined !== v) {
-              self.ops.emit('$pull:' + key, v);
+              self.emit('$pull:' + key, v);
             }
           });
           if (false === ret) {
@@ -301,10 +315,10 @@ Document.prototype.onOp = function (mod, implicit) {
           var unsetOp = { $unset: {} }
             , setOp = { $set: {} }
           unsetOp.$unset[k] = 1;
-          setOp.$set[mod.$rename[k]] = dref.get(self.obj, k);
+          setOp.$set[mod.$rename[k]] = dref.get(self, k);
           self.onOp(unsetOp, true);
           self.onOp(setOp, true);
-          self.ops.emit('$rename:' + k, mod.$rename[k]);
+          self.emit('$rename:' + k, mod.$rename[k]);
         })(key);
       }
     }
@@ -319,7 +333,7 @@ Document.prototype.onOp = function (mod, implicit) {
   this.emit('op', mod, implicit);
 
   // apply transformations
-  fiddle(mod, null, this.obj);
+  fiddle(mod, null, this);
 
   // emit ops events
   for (var i in mod) {
@@ -327,9 +341,9 @@ Document.prototype.onOp = function (mod, implicit) {
       if ('$' == i.charAt(0)) {
         for (var ii in mod[i]) {
           if (mod[i].hasOwnProperty(ii)) {
-            self.ops.emit(i + ':' + ii, mod[i][ii]);
+            self.emit(i + ':' + ii, mod[i][ii]);
             if ('$set' != i) {
-              self.ops.emit('$set:' + ii, mod[i][ii]);
+              self.emit('$set:' + ii, mod[i][ii]);
             }
           }
         }
@@ -339,16 +353,23 @@ Document.prototype.onOp = function (mod, implicit) {
 };
 
 /**
- * Operations emitter.
+ * Calls the supplied fn when the doc is ready. If the doc is ready, it's
+ * called immediately.
+ *
+ * @param {Function} callback
+ * @return {Document} for chaining
+ * @api public
  */
 
-function Operations () {}
+Document.prototype.ready = function (fn) {
+  if (this.isReady) {
+    fn();
+  } else {
+    this.once('payload', fn);
+  }
+  return this;
+};
 
-/**
- * Inherits from EventEmitter.
- */
-
-Operations.prototype.__proto__ = EventEmitter.prototype;
 
 /**
  * Overrides on to allow operations.
@@ -356,7 +377,11 @@ Operations.prototype.__proto__ = EventEmitter.prototype;
  * @api public
  */
 
-Operations.prototype.on = function (key, op, fn) {
+Document.prototype.on = function (key, op, fn) {
+  if (~events.indexOf(key)) {
+    return EventEmitter.prototype.on.call(this, key, op);
+  }
+
   if ('function' == typeof op) {
     fn = op;
     op = '$set';
@@ -373,7 +398,11 @@ Operations.prototype.on = function (key, op, fn) {
  * @api public
  */
 
-Operations.prototype.once = function (key, op, fn) {
+Document.prototype.once = function (key, op, fn) {
+  if (~events.indexOf(key)) {
+    return EventEmitter.prototype.once.call(this, key, op);
+  }
+
   if ('function' == typeof op) {
     fn = op;
     op = '$set';
@@ -1699,7 +1728,7 @@ Manager.prototype.doc = function (name, fn) {
   if (!this.docs[name]) {
     var doc = new Document(this, name);
     this.docs[name] = doc;
-    doc.on('payload', fn);
+    if (fn) doc.ready(fn);
   }
   return doc;
 };
