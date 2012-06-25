@@ -143,7 +143,7 @@ module.exports = Document;
  * @api private
  */
 
-var events = ['payload', 'op', 'error', 'noop'];
+var events = ['payload', 'op', 'error', 'noop', 'load'];
 
 /**
  * Database constructor
@@ -154,20 +154,36 @@ var events = ['payload', 'op', 'error', 'noop'];
  */
 
 function Document (manager, name) {
-  this.name = name;
   this.manager = manager;
   this.socket = manager.socket;
-  this.socket.emit('db', manager.sid, name);
-  this.socket.on(name + '#payload', util.bind(this.onPayload, this));
-  this.socket.on(name + '#op', util.bind(this.onOp, this));
   this.isReady = false;
-}
+  if (name) {
+    this.load(name);
+  }
+};
 
 /**
  * Inherits from EventEmitter
  */
 
 util.inherits(Document, EventEmitter);
+
+/**
+ * Loads the given document route.
+ *
+ * @param {String} doc route name
+ * @return {Document} for chaining
+ * @api public
+ */
+
+Document.prototype.load = function (name) {
+  this.name = name;
+  this.socket.emit('db', this.manager.sid, name);
+  this.socket.on(name + '#payload', util.bind(this.onPayload, this));
+  this.socket.on(name + '#op', util.bind(this.onOp, this));
+  this.emit('load', name);
+  return this;
+};
 
 /**
  * Handles the document payload.
@@ -369,7 +385,6 @@ Document.prototype.ready = function (fn) {
   }
   return this;
 };
-
 
 /**
  * Overrides on to allow operations.
@@ -1724,12 +1739,19 @@ function Manager (socket) {
  */
 
 Manager.prototype.doc = function (name, fn) {
-  debug('fetching db "%s"', name);
-  if (!this.docs[name]) {
-    var doc = new Document(this, name);
-    this.docs[name] = doc;
+  var doc = new Document(this)
+    , self = this
+
+  doc.on('load', function (n) {
+    debug('fetching db "%s"', name);
+    self.docs[name] = doc;
     if (fn) doc.ready(fn);
+  });
+
+  if (name) {
+    doc.load(name);
   }
+
   return doc;
 };
 
