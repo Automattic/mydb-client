@@ -318,6 +318,24 @@ Document.prototype.once = function (key, op, fn) {
   return this;
 };
 
+/**
+ * Fires the callback when the given key is ready.
+ *
+ * @param {String} key
+ * @param {Function} callback
+ * @return {Document} for chaining
+ * @api public
+ */
+
+Document.prototype.upon = function (key, fn) {
+  if (null != this[key]) {
+    fn(this[key]);
+  } else {
+    this.once(key, fn);
+  }
+  return this;
+};
+
 });require.register("event-emitter.js", function(module, exports, require, global){
 
 /**
