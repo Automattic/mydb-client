@@ -328,12 +328,14 @@ Document.prototype.once = function (key, op, fn) {
  */
 
 Document.prototype.upon = function (key, fn) {
-  if (null != this[key]) {
-    fn(this[key]);
-  } else {
-    this.once(key, fn);
-  }
-  return this;
+  var self = this;
+  return this.ready(function () {
+    if (null != self[key]) {
+      fn(self[key]);
+    } else {
+      self.once(key, fn);
+    }
+  });
 };
 
 });require.register("event-emitter.js", function(module, exports, require, global){
