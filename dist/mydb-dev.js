@@ -1729,7 +1729,7 @@ function Manager (socket) {
     var match = document.cookie.match(/mydb=([^;]+)/);
     if (!match) {
       var sid = String(Math.random()).substr(3) + String(Math.random()).substr(3);
-      document.cookie += ' mydb=' + sid + ';';
+      document.cookie = 'mydb=' + sid + ';';
       match = [null, sid];
     }
     this.sid = match[1];
