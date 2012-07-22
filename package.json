@@ -2,6 +2,7 @@
     "name": "mydb-client"
   , "version": "0.4.3"
   , "main": "./lib/mydb"
+  , "private": true
   , "dependencies": {
         "socket.io-client": "0.9.x"
       , "debug": "0.6.x"
