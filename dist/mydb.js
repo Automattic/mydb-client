@@ -319,7 +319,10 @@ Document.prototype.once = function (key, op, fn) {
 };
 
 /**
- * Fires the callback when the given key is ready.
+ * Fires the callback when the given key is ready and upon changes.
+ *
+ * When called when the initial value, the second parameter of the
+ * callback is `true`
  *
  * @param {String} key
  * @param {Function} callback
@@ -331,7 +334,7 @@ Document.prototype.upon = function (key, fn) {
   var self = this;
   return this.ready(function () {
     if (null != self[key]) {
-      fn(self[key]);
+      fn(self[key], true);
     } else {
       self.once(key, fn);
     }
@@ -1561,7 +1564,6 @@ var fiddle = module.exports = function(modifiers, filter, target, fn) {
 })();
 
 });require.register("manager.js", function(module, exports, require, global){
-
 /**
  * Module dependencies.
  */
@@ -1608,7 +1610,7 @@ function Manager (socket) {
     var match = document.cookie.match(/mydb=([^;]+)/);
     if (!match) {
       var sid = String(Math.random()).substr(3) + String(Math.random()).substr(3);
-      document.cookie = 'mydb=' + sid + ';';
+      document.cookie = 'mydb=' + sid + '; path=/; secure';
       match = [null, sid];
     }
     this.sid = match[1];
