@@ -1,4 +1,9 @@
 
+0.4.10 / 2012-08-14
+===================
+
+  * Added Document#upon callback parameter "initial".
+
 0.4.9 / 2012-08-14
 ==================
 
