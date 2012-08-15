@@ -454,11 +454,8 @@ Document.prototype.once = function (key, op, fn) {
 Document.prototype.upon = function (key, fn) {
   var self = this;
   return this.ready(function () {
-    if (null != self[key]) {
-      fn(self[key], true);
-    } else {
-      self.once(key, fn);
-    }
+    fn(self[key], true);
+    self.once(key, fn);
   });
 };
 
