@@ -1,4 +1,9 @@
 
+0.4.11 / 2012-08-15
+===================
+
+  * document: change upon semantics again - great method name btw
+
 0.4.10 / 2012-08-14
 ===================
 
