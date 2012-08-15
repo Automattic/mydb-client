@@ -129,7 +129,7 @@ var util = require('./util')
   , fiddle = require('./fiddle')
   , dref = require('./fiddle/dref')
   , EventEmitter = require('./event-emitter')
-  , debug = require('debug')('mydb-client')
+  , debug = require('debug')('mydb-client');
 
 /**
  * Module exports.
@@ -455,7 +455,7 @@ Document.prototype.upon = function (key, fn) {
   var self = this;
   return this.ready(function () {
     fn(self[key], true);
-    self.once(key, fn);
+    self.on(key, fn);
   });
 };
 
