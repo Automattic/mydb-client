@@ -79,7 +79,7 @@ Document.prototype.onPayload = function (obj) {
   }
   this.isReady = true;
   this.emit('payload');
-}
+};
 
 /**
  * Gets a key.
@@ -130,9 +130,9 @@ Document.prototype.onOp = function (mod, implicit) {
             this.onOp(m, true);
           }
         } else {
-          var arr = dref.get(this, key) || []
-            , len = arr.length
-            , m = { $addToSet: {} }
+          var arr = dref.get(this, key) || [];
+          var len = arr.length;
+          var m = { $addToSet: {} };
 
           m.$addToSet[key] = add[key];
 
@@ -207,8 +207,8 @@ Document.prototype.onOp = function (mod, implicit) {
     for (var key in mod.$rename) {
       if (mod.$rename.hasOwnProperty(key)) {
         (function (k) {
-          var unsetOp = { $unset: {} }
-            , setOp = { $set: {} }
+          var unsetOp = { $unset: {} };
+          var setOp = { $set: {} };
           unsetOp.$unset[k] = 1;
           setOp.$set[mod.$rename[k]] = dref.get(self, k);
           self.onOp(unsetOp, true);
@@ -304,8 +304,8 @@ Document.prototype.once = function (key, op, fn) {
     op = '$' + op;
   }
 
-  var name = op + ':' + key
-    , self = this;
+  var name = op + ':' + key;
+  var self = this;
 
   function on () {
     EventEmitter.prototype.removeListener.call(this, name, on);
@@ -333,9 +333,7 @@ Document.prototype.once = function (key, op, fn) {
 Document.prototype.upon = function (key, fn) {
   var self = this;
   return this.ready(function () {
-    if (undefined !== self.get(key)) {
-      fn(self.get(key), true);
-    }
+    fn(self.get(key), true);
     self.on(key, fn);
   });
 };
@@ -763,7 +761,7 @@ var _findValues = function(keyParts, target, create, index, values) {
       }
       return values;
     } else
-    if(!ct) {
+    if(undefined === ct) {
       if(!create) return values;
       ct = target[kp] = {};
     }
