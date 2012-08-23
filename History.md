@@ -1,4 +1,11 @@
 
+0.5.0 / 2012-08-23
+==================
+
+  * dref: fix for falsy values
+  * document: `upon` now calls with undefined value
+  * document: style
+
 0.4.12 / 2012-08-15
 ===================
 
