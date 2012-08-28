@@ -1,4 +1,9 @@
 
+0.5.1 / 2012-08-28
+==================
+
+  * manager: temporarily reverting cookie flags
+
 0.5.0 / 2012-08-23
 ==================
 
