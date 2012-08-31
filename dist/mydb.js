@@ -319,6 +319,26 @@ Document.prototype.once = function (key, op, fn) {
 };
 
 /**
+ * Overrides listeners to allow operations.
+ *
+ * @api public
+ */
+
+Document.prototype.listeners = function(key, op){
+  if (~events.indexOf(key)) {
+    return EventEmitter.prototype.listeners.call(this, key);
+  }
+
+  if (null == op) {
+    op = '$set';
+  } else {
+    op = '$' + op;
+  }
+
+  return EventEmitter.prototype.listeners.call(this, op + ':' + key);
+};
+
+/**
  * Overrides rmeovListener to allow operations.
  *
  * @api public

@@ -1,4 +1,9 @@
 
+0.5.3 / 2012-08-31
+==================
+
+  * document: added `listeners` override with ops support
+
 0.5.2 / 2012-08-31
 ==================
 
