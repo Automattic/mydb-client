@@ -1,4 +1,9 @@
 
+0.5.2 / 2012-08-31
+==================
+
+  * document: added `removeListener` override with ops support
+
 0.5.1 / 2012-08-28
 ==================
 
