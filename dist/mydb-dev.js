@@ -440,6 +440,27 @@ Document.prototype.once = function (key, op, fn) {
 };
 
 /**
+ * Overrides rmeovListener to allow operations.
+ *
+ * @api public
+ */
+
+Document.prototype.removeListener = function(key, op, fn){
+  if (~events.indexOf(key)) {
+    return EventEmitter.prototype.removeListener.call(this, key, op);
+  }
+
+  if ('function' == typeof op) {
+    fn = op;
+    op = '$set';
+  } else {
+    op = '$' + op;
+  }
+
+  return EventEmitter.prototype.removeListener.call(this, op + ':' + key, fn);
+};
+
+/**
  * Fires the callback when the given key is ready and upon changes.
  *
  * When called when the initial value, the second parameter of the
