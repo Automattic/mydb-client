@@ -68,7 +68,7 @@ Document.prototype.load = function (name) {
 
     // clear old keys
     for (var i = 0; i < this.keys.length; i++) {
-      delete this.keys[i];
+      delete this[this.keys[i]];
     }
   }
 
