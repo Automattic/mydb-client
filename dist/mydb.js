@@ -36,6 +36,10 @@ function Document (manager, name) {
   this.manager = manager;
   this.socket = manager.socket;
   this.isReady = false;
+  this.bound = {
+    onPayload: util.bind(this.onPayload, this),
+    onOp: util.bind(this.onOp, this)
+  };
   if (name) {
     this.load(name);
   }
@@ -56,10 +60,23 @@ util.inherits(Document, EventEmitter);
  */
 
 Document.prototype.load = function (name) {
+  // if the document is being re-loaded
+  if (this.name) {
+    // remove old subscriptions
+    this.socket.removeListener(this.name + '#payload', this.bound.onPayload);
+    this.socket.removeListener(this.name + '#op', this.bound.onOp);
+
+    // clear old keys
+    for (var i = 0; i < this.keys.length; i++) {
+      delete this.keys[i];
+    }
+  }
+
   this.name = name;
+  this.keys = [];
   this.socket.emit('db', this.manager.sid, name);
-  this.socket.on(name + '#payload', util.bind(this.onPayload, this));
-  this.socket.on(name + '#op', util.bind(this.onOp, this));
+  this.socket.on(name + '#payload', this.bound.onPayload);
+  this.socket.on(name + '#op', this.bound.onOp);
   this.emit('load', name);
   return this;
 };
@@ -74,6 +91,7 @@ Document.prototype.onPayload = function (obj) {
   debug('got payload %j', obj);
   for (var i in obj) {
     if (obj.hasOwnProperty(i)) {
+      this.keys.push(i);
       this[i] = obj[i];
     }
   }
