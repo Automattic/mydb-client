@@ -123,7 +123,7 @@ Document.prototype.get = function (key) {
 Document.prototype.bson = function(obj){
   for (var i in obj) {
     if (obj.hasOwnProperty(i)) {
-      if (!Array.isArray(obj) && 'object' == typeof obj[i]) {
+      if (obj && !Array.isArray(obj) && 'object' == typeof obj[i]) {
         if (obj[i].$oid) {
           obj[i] = obj[i].$oid;
         } else {
