@@ -425,6 +425,23 @@ Document.prototype.upon = function (key, fn) {
   });
 };
 
+/**
+ * Foreach array walking helper.
+ *
+ * @api public
+ */
+
+Document.prototype.each = function(key, fn){
+  var self = this;
+  return this.ready(function () {
+    var arr = self.get(key) || [];
+    for (var i = 0, l = arr.length; i < l; i++) {
+      fn.call(this, arr[i]);
+    }
+    self.on(key, 'push', fn);
+  });
+};
+
 });require.register("event-emitter.js", function(module, exports, require, global){
 
 /**
