@@ -1,4 +1,9 @@
 
+0.6.8 / 2012-09-25
+==================
+
+  * document: ignore multiple payload socket events
+
 0.6.7 / 2012-09-21
 ==================
 

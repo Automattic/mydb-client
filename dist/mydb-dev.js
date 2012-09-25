@@ -209,6 +209,8 @@ Document.prototype.load = function (name) {
  */
 
 Document.prototype.onPayload = function (obj) {
+  // XXX: remove when we switch to a single socket subscription
+  if (this.isReady) return;
   debug('got payload %j', obj);
   obj = this.bson(obj);
   for (var i in obj) {
@@ -1863,7 +1865,7 @@ function Manager (socket) {
 
 Manager.prototype.doc = function (name, fn) {
   var doc = new Document(this)
-    , self = this
+    , self = this;
 
   doc.on('load', function (n) {
     debug('fetching db "%s"', name);
