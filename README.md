@@ -18,11 +18,12 @@ mydb.get('/woot/woot');
 
 ## API
 
-### Manager([url])
+### Manager([url|options])
 
   Connects to the [mydb-server](http://github.com/learnboost/mydb-server)
   listening on `url`.
-  If `url` is not supplied it will connect to `window.location`.
+  If a parameter is not supplied it will connect to `window.location`
+  Alternatively, an engine.io client options object can be supplied.
 
 ### Manager#get(url)
 
