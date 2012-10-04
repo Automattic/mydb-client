@@ -1,16 +1,11 @@
 
-all: build build-dev
+build: index.js components
+	@component build --dev
 
-build:
-	@./node_modules/.bin/browserbuild \
-		-g mydb \
-		-m mydb -b lib/ \
-		lib > dist/mydb.js
-	@echo "... built dist/mydb.js"
+components:
+	@component install --dev
 
-build-dev:
-	@./node_modules/.bin/browserbuild \
-		-g mydb \
-		-d -m mydb -b lib/ \
-		lib > dist/mydb-dev.js
-	@echo "... built dist/mydb-dev.js"
+clean:
+	rm -fr build components
+
+.PHONY: clean
