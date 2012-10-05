@@ -29,42 +29,42 @@ mydb.get('/woot/woot');
 
   Creates a `Document` by subscribing to the supplied `url`.
   Supplying a `url` is optional, if a vanilla document is desired. See
-  `Document#connect` below.
+  `Document#load` below.
 
 ### Document
 
   Each document represents a subscription to a given resource URL.
 
-### Document#manager()
+### Document#$manager()
 
   Returns the associated manager.
 
-### Document#sub()
+### Document#$sid()
 
-  Returns the subscription id.
+  Returns the sebscription id.
 
-### Document#readyState()
+### Document#$readyState()
 
-  - `disconnected`: no subscription (default when no `url` was provided)
-  - `connecting`: loading a resource
-  - `connected`: resource is loaded
-  - `disconnecting`: subscription is being destroyed
+  - `unloaded`: no subscription (default when no `url` was provided)
+  - `loading`: loading a resource
+  - `loaded`: resource is loaded
+  - `unloading`: subscription is being destroyed
 
-### Document#url()
+### Document#$url()
 
   Returns the `url` this document is loaded from / loading.
 
-### Document#connect(url[, fn])
+### Document#$load(url[, fn])
 
   Loads a document from the given URL. If `fn` is supplied, it's passed
   to `ready`.
 
-### Document#ready(fn)
+### Document#$ready(fn)
 
   Calls the supplied `fn` when the resource is loaded. If the resource
   is already loaded, the function is fired on the next tick.
 
-### Document#get(key[, fn])
+### Document#$get(key[, fn])
 
   Returns the value of the given `key`, which can use [dot
   notation](http://github.com/learnboost/dot).
@@ -72,7 +72,7 @@ mydb.get('/woot/woot');
   If `fn` is supplied, `ready` is called first, and the value is passed
   to the callback.
 
-### Document#on(key[, op], fn)
+### Document#$on(key[, op], fn)
 
   Subscribes to changes for the given `key`.
 
@@ -90,20 +90,17 @@ mydb.get('/woot/woot');
   - The second parameter of the event callback is always the `log` object
     returned by mongo-query.
 
-### Document#upon(key, fn)
+### Document#$upon(key, fn)
 
   Calls `ready`, then calls `fn` with the initial value of the given
   `key`, and subscribes to subsequent change events for `key`.
 
-### Document#each(key, fn)
+### Document#$each(key, fn)
 
   Calls `ready`, then calls `fn` for each value of the array found under
   `key`.
 
-### Document#reload(fn)
+### Document#$destroy(fn)
 
-  Calls `destroy`, then `load` with the existing `url`
-
-### Document#destroy(fn)
-
-  Destroys this subscription.
+  Destroys this subscription. `fn` gets called when the unsubscription
+  for the current id is confirmed.
