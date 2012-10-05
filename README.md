@@ -35,7 +35,11 @@ mydb.get('/woot/woot');
 
   Each document represents a subscription to a given resource URL.
 
-### Document#$id()
+### Document#manager()
+
+  Returns the associated manager.
+
+### Document#sub()
 
   Returns the subscription id.
 
