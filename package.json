@@ -5,6 +5,7 @@
   "dependencies": {
     "engine.io-client": "0.3.0",
     "superagent": "0.9.5",
+    "emitter-component": "*",
     "mongo-query": "git+ssh://git@github.com:LearnBoost/mongo-query.git#0.1.0",
     "debug": "*"
   },
