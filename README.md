@@ -54,17 +54,17 @@ mydb.get('/woot/woot');
 
   Returns the `url` this document is loaded from / loading.
 
-### Document#$load(url[, fn])
+### Document#load(url[, fn])
 
   Loads a document from the given URL. If `fn` is supplied, it's passed
   to `ready`.
 
-### Document#$ready(fn)
+### Document#ready(fn)
 
   Calls the supplied `fn` when the resource is loaded. If the resource
   is already loaded, the function is fired on the next tick.
 
-### Document#$get(key[, fn])
+### Document#get(key[, fn])
 
   Returns the value of the given `key`, which can use [dot
   notation](http://github.com/learnboost/dot).
@@ -72,7 +72,7 @@ mydb.get('/woot/woot');
   If `fn` is supplied, `ready` is called first, and the value is passed
   to the callback.
 
-### Document#$on(key[, op], fn)
+### Document#on(key[, op], fn)
 
   Subscribes to changes for the given `key`.
 
@@ -90,17 +90,17 @@ mydb.get('/woot/woot');
   - The second parameter of the event callback is always the `log` object
     returned by mongo-query.
 
-### Document#$upon(key, fn)
+### Document#upon(key, fn)
 
   Calls `ready`, then calls `fn` with the initial value of the given
   `key`, and subscribes to subsequent change events for `key`.
 
-### Document#$each(key, fn)
+### Document#each(key, fn)
 
   Calls `ready`, then calls `fn` for each value of the array found under
   `key`.
 
-### Document#$destroy(fn)
+### Document#destroy(fn)
 
   Destroys this subscription. `fn` gets called when the unsubscription
   for the current id is confirmed.
