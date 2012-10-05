@@ -87,13 +87,67 @@ Document.prototype.$readyState = function(s){
 };
 
 /**
+ * Called with the object payload.
+ *
+ * @param {
+ * @api private
+ */
+
+Document.prototype.$payload = function(obj){
+  for (var i in obj) {
+    if (obj.hasOwnProperty(i)) {
+      this[i] = obj[i];
+    }
+  }
+};
+
+/**
+ * Called with each operation.
+ *
+ * @api private
+ */
+
+Document.prototype.$op = function(data){
+  var log = query(this, data[0], data[1]);
+
+  for (var i = 0; i < log.length; i++) {
+    var obj = log[i];
+    var val = obj.value;
+    var key = obj.key;
+    var type = obj.type;
+
+    // express $pop as a $pull
+    if ('$pop' == type) {
+      this.emit(key + '$pull', val, obj);
+    }
+
+    // express $rename as $unset + $set
+    if ('$unset' == type) {
+      this.emit(key + '$unset', null, obj);
+      this.emit(val + '$set', this.$get(val), obj);
+    }
+
+    // express $pushAll/$pullAll as multiple single ops
+    if (/All/.test(type)) {
+      for (var ii = 0; ii < val.length; i++) {
+        this.emit(key + type.replace(/All/, ''), val[ii], obj);
+      }
+    } else {
+      this.emit(key + type, val, obj);
+    }
+
+    this.emit(key, this.$get(key), obj);
+  }
+};
+
+/**
  * Called when the document is ready.
  *
  * @param {Function} callback
  * @api public
  */
 
-Document.prototype.$ready = function(fn){
+Document.prototype.ready = function(fn){
   if ('loaded' == this.$readyState) {
     setTimeout(fn, 0);
   } else {
@@ -107,7 +161,7 @@ Document.prototype.$ready = function(fn){
  * @api public
  */
 
-Document.prototype.$load = function(url, fn){
+Document.prototype.load = function(url, fn){
   if ('unloaded' != this.$readyState()) {
     throw new Error('Trying to load resource, but doc is not unloaded');
   }
@@ -139,21 +193,6 @@ Document.prototype.$load = function(url, fn){
 };
 
 /**
- * Called with the object payload.
- *
- * @param {
- * @api private
- */
-
-Document.prototype.$payload = function(obj){
-  for (var i in obj) {
-    if (obj.hasOwnProperty(i)) {
-      this[i] = obj[i];
-    }
-  }
-};
-
-/**
  * Gets the given key.
  *
  * @param {String} key
@@ -161,7 +200,7 @@ Document.prototype.$payload = function(obj){
  * @api public
  */
 
-Document.prototype.$get = function(key, fn){
+Document.prototype.get = function(key, fn){
   var obj = this;
 
   function get(){
@@ -178,40 +217,13 @@ Document.prototype.$get = function(key, fn){
 };
 
 /**
- * Called with each operation.
- *
- * @api private
- */
-
-Document.prototype.$op = function(data){
-  var log = query(this, data[0], data[1]);
-
-  for (var i = 0; i < log.length; i++) {
-    var obj = log[i];
-    var val = obj.value;
-    var key = obj.key;
-
-    // normalize ops that operate on arrays
-    if (/All/.test(obj.type)) {
-      for (var ii = 0; ii < val.length; i++) {
-        this.emit(key + '$' + obj.type.replace(/All/, ''), val[ii]);
-      }
-    } else {
-      this.emit(key + '$' + obj.type, val);
-    }
-
-    this.emit(key, this.$get(key));
-  }
-};
-
-/**
  * Destroys the subscription (if any)
  *
  * @param {Function} optional, callback
  * @api public
  */
 
-Document.prototype.$destroy = function(fn){
+Document.prototype.destroy = function(fn){
   switch (this.$readyState()) {
     case 'loading':
       if (this.xhr.abort) {
