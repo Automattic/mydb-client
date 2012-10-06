@@ -29,8 +29,8 @@ module.exports = Manager;
  * @api public
  */
 
-function Manager(url, opts){
-  if (!(this instanceof Manager)) return new Manager(url, opts);
+function Manager(url){
+  if (!(this instanceof Manager)) return new Manager(url);
   var self = this;
   this.socket = new Socket(url);
   this.socket.onmessage = function(msg){
