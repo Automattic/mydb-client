@@ -17,6 +17,12 @@ try {
 }
 
 /**
+ * Module exports.
+ */
+
+module.exports = Document;
+
+/**
  * Document constructor.
  *
  * @param {Manager} originating manager.
