@@ -36,6 +36,7 @@ function Manager(url, opts){
     self.onMessage(msg);
   };
   this.socket.onclose = function(){
+    debug('mydb-client socket closed');
     self.emit('disconnect');
   };
 }
@@ -57,18 +58,18 @@ Manager.prototype.onMessage = function(msg){
   var sid = obj.i;
   var doc = this.subscriptions[sid];
 
-  if (!doc && obj.data) {
+  if (!doc && obj.d) {
     debug('ignoring data for inexisting subscription %s', sid);
     return;
   }
 
   switch (obj.e) {
     case 'p': // payload
-      doc.$payload(obj.data);
+      doc.$payload(obj.d);
       break;
 
     case 'o': // operation
-      doc.$op(obj.data);
+      doc.$op(obj.d);
       break;
 
     case 'u': // unsubscribe confirmation
@@ -86,7 +87,7 @@ Manager.prototype.onMessage = function(msg){
 
 Manager.prototype.subscribe = function(id, doc){
   this.subscriptions[id] = doc;
-  this.write({ e: 'subscribe', id: id });
+  this.write({ e: 'subscribe', i: id });
   this.emit('subscribe', id);
 };
 
@@ -115,7 +116,7 @@ Manager.prototype.unsubscribe = function(id){
   }
 
   delete this.subscriptions[id];
-  this.write({ e: 'unsubscribe', id: id });
+  this.write({ e: 'unsubscribe', i: id });
   this.emit('destroy', sub);
 };
 
