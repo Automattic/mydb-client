@@ -30,6 +30,7 @@ module.exports = Manager;
  */
 
 function Manager(url, opts){
+  if (!(this instanceof Manager)) return new Manager(url, opts);
   var self = this;
   this.socket = new Socket(url);
   this.socket.onmessage = function(msg){
