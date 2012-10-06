@@ -6,6 +6,7 @@
     "engine.io-client": "0.3.0",
     "superagent": "0.9.5",
     "dot-component": "0.1.0",
+    "json-component": "*",
     "emitter-component": "*",
     "mongo-query": "git+ssh://git@github.com:LearnBoost/mongo-query.git#0.2.0",
     "debug": "*"
