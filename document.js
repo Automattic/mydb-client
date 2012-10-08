@@ -85,6 +85,7 @@ Document.prototype.$url = function(){
 
 Document.prototype.$readyState = function(s){
   if (s) {
+    debug('setting state %s', s);
     this.$_readyState = s;
     this.emit('$state', s);
     this.emit('$state:' + s);
@@ -102,6 +103,7 @@ Document.prototype.$readyState = function(s){
  */
 
 Document.prototype.$payload = function(obj){
+  debug('got payload %j', obj);
   for (var i in obj) {
     if (obj.hasOwnProperty(i)) {
       this[i] = obj[i];
