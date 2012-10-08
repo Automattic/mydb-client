@@ -37,6 +37,7 @@ function Manager(url){
   this.socket.onclose = this.onClose.bind(this);
   this.socket.onmessage = this.onMessage.bind(this);
   this.connected = false;
+  this.subscriptions = {};
 }
 
 /**
