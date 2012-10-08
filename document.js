@@ -271,7 +271,6 @@ Document.prototype.load = function(url, fn){
   if ('undefined' != typeof process && '/' == url[0]) {
     url = (socket.secure ? 'https' : 'http') + '://' +
             socket.host + ':' + socket.port + url;
-    console.log('completing url', url);
   }
 
   // keep track of current url
