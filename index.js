@@ -141,8 +141,20 @@ Manager.prototype.unsubscribe = function(id){
  * @api public
  */
 
-Manager.prototype.get = function(url){
+Manager.prototype.get = function(url, fn){
   var doc = new Document(this);
-  if (url) doc.load(url);
+
+  if (url) {
+    if (this.connected) {
+      load();
+    } else {
+      this.once('connect', load);
+    }
+  }
+
+  function load(){
+    doc.load(url, fn);
+  }
+
   return doc;
 };
