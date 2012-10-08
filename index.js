@@ -111,7 +111,7 @@ Manager.prototype.onMessage = function(msg){
 Manager.prototype.subscribe = function(id, doc){
   this.subscriptions[id] = doc;
   this.write({ e: 'subscribe', i: id });
-  this.emit('subscribe', id);
+  this.emit('subscription', doc);
 };
 
 /**
