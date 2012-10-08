@@ -205,9 +205,13 @@ Document.prototype.load = function(url, fn){
   var xhr = this.$xhr = request.get(url, function(res){
     // XXX: remove this check when superagent gets `abort`
     if (xhr == self.$xhr) {
-      debug('got subscription id "%s"', res.text);
-      self.$_sid = res.text;
-      manager.subscribe(res.text, self);
+      if (res.ok) {
+        debug('got subscription id "%s"', res.text);
+        self.$_sid = res.text;
+        manager.subscribe(res.text, self);
+      } else {
+        debug('subscription error');
+      }
     } else {
       debug('ignoring outdated resource subscription %s', res.text);
     }
