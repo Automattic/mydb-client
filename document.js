@@ -195,7 +195,7 @@ Document.prototype.load = function(url, fn){
     }
   });
 
-  if (fn) this.$ready(fn);
+  if (fn) this.ready(fn);
 };
 
 /**
