@@ -119,6 +119,7 @@ Document.prototype.$payload = function(obj){
  */
 
 Document.prototype.$op = function(data){
+  debug('got operation %j', data);
   var log = query(this, data[0], data[1]);
 
   for (var i = 0; i < log.length; i++) {
@@ -155,6 +156,7 @@ Document.prototype.$op = function(data){
  * Called when the document is ready.
  *
  * @param {Function} callback
+ * @return {Document} for chaining
  * @api public
  */
 
@@ -164,11 +166,13 @@ Document.prototype.ready = function(fn){
   } else {
     this.once('$state:loaded', fn);
   }
+  return this;
 };
 
 /**
  * Connects to the given url.
  *
+ * @return {Document} for chaining
  * @api public
  */
 
@@ -179,28 +183,38 @@ Document.prototype.load = function(url, fn){
 
   debug('subscribing to resource %s', url);
 
+  var manager = this.$manager()
+    , socket = manager.socket;
+
   // mark ready state as loading the doc
   this.$readyState('loading');
+
+  // if in node, try to prefix the url if relative
+  if ('undefined' != typeof process && '/' == url[0]) {
+    url = (socket.secure ? 'https' : 'http') + '://' +
+            socket.host + ':' + socket.port + url;
+    console.log('completing url', url);
+  }
 
   // keep track of current url
   this.$_url = url;
   url = url + (~url.indexOf('?') ? '' : '?') + 'my=1&t=' + Date.now();
 
   // get the subscription id over REST
-  var manager = this.$manager();
   var self = this;
   var xhr = this.$xhr = request.get(url, function(res){
     // XXX: remove this check when superagent gets `abort`
-    if (xhr == self.$xhr()) {
-      debug('got subscription id %s', res.text);
+    if (xhr == self.$xhr) {
+      debug('got subscription id "%s"', res.text);
       self.$_sid = res.text;
-      manager.subscribe(res.text, this);
+      manager.subscribe(res.text, self);
     } else {
       debug('ignoring outdated resource subscription %s', res.text);
     }
   });
 
   if (fn) this.ready(fn);
+  return this;
 };
 
 /**
@@ -208,6 +222,7 @@ Document.prototype.load = function(url, fn){
  *
  * @param {String} key
  * @param {Function} optional, if supplied wraps with `ready`
+ * @return {Document} for chaining
  * @api public
  */
 
@@ -225,12 +240,33 @@ Document.prototype.get = function(key, fn){
   } else {
     return get();
   }
+
+  return this;
+};
+
+/**
+ * Loops through the given key.
+ *
+ * @param {String} key
+ * @param {Function} callback
+ * @return {Document} for chaining
+ * @api public
+ */
+
+Document.prototype.each = function(key, fn){
+  var self = this;
+  this.get(key, function(v){
+    if ('array' == type(v)) v.forEach(fn);
+    self.on(key, 'push', fn);
+  });
+  return this;
 };
 
 /**
  * Destroys the subscription (if any)
  *
  * @param {Function} optional, callback
+ * @return {Document} for chaining
  * @api public
  */
 
@@ -266,4 +302,5 @@ Document.prototype.destroy = function(fn){
       this.$manager().unsubscribe(this.$sid(), this);
       break;
   }
+  return this;
 };
