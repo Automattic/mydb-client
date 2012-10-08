@@ -214,7 +214,7 @@ Document.prototype.$op = function(data){
     // express $rename as $unset + $set
     if ('$unset' == type) {
       this.emit(key + '$unset', null, obj);
-      this.emit(val + '$set', this.$get(val), obj);
+      this.emit(val + '$set', this.get(val), obj);
     }
 
     // express $pushAll/$pullAll as multiple single ops
@@ -226,7 +226,7 @@ Document.prototype.$op = function(data){
       this.emit(key + type, val, obj);
     }
 
-    this.emit(key, this.$get(key), obj);
+    this.emit(key, this.get(key), obj);
   }
 };
 
