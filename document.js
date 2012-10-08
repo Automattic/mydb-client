@@ -204,7 +204,7 @@ Document.prototype.$op = function(data){
     var obj = log[i];
     var val = obj.value;
     var key = obj.key;
-    var type = obj.type;
+    var type = obj.op;
 
     // express $pop as a $pull
     if ('$pop' == type) {
