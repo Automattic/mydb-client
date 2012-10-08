@@ -245,6 +245,21 @@ Document.prototype.get = function(key, fn){
 };
 
 /**
+ * Calls with the initial value + subsequent ones.
+ *
+ * @param {String} key
+ * @param {Function} callback
+ * @return {Document} for chaining
+ * @api public
+ */
+
+Document.prototype.upon = function(key, fn){
+  this.get(key, fn);
+  this.on(key, fn);
+  return this;
+};
+
+/**
  * Loops through the given key.
  *
  * @param {String} key
