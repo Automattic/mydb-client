@@ -5,14 +5,16 @@
 
 var request = require('superagent')
   , query = require('mongo-query')
-  , debug = require('debug')('mydb-client')
-  , dot, Emitter;
+  , debug = require('debug')('mydb-client:document')
+  , dot, type, Emitter;
 
 try {
   dot = require('dot');
+  type = require('type');
   Emitter = require('emitter');
 } catch(e){
   dot = require('dot-component');
+  type = require('type-component');
   Emitter = require('emitter-component');
 }
 
