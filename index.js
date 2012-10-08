@@ -33,6 +33,7 @@ function Manager(url){
   if (!(this instanceof Manager)) return new Manager(url);
   var self = this;
   this.socket = new Socket(url);
+  this.socket.onopen = this.onOpen.bind(this);
   this.socket.onmessage = function(msg){
     self.onMessage(msg);
   };
@@ -40,6 +41,7 @@ function Manager(url){
     debug('mydb-client socket closed');
     self.emit('disconnect');
   };
+  this.connected = false;
 }
 
 /**
@@ -47,6 +49,17 @@ function Manager(url){
  */
 
 Emitter(Manager.prototype);
+
+/**
+ * Called upon upon.
+ *
+ * @api private
+ */
+
+Manager.prototype.onOpen = function(){
+  this.connected = true;
+  this.emit('connect');
+};
 
 /**
  * Called when a message is received.
