@@ -109,6 +109,7 @@ Document.prototype.$payload = function(obj){
       this[i] = obj[i];
     }
   }
+  this.$readyState('loaded');
 };
 
 /**
