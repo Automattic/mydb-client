@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "description": "mydb client component",
   "keywords": ["realtime", "db"],
-  "scripts": ["index.js"],
+  "scripts": ["index.js", "document.js"],
   "dependencies": {
     "learnboost/engine.io-client": "0.3.0",
     "learnboost/mongo-query": "0.1.0",
     "learnboost/dot": "0.1.0",
     "component/emitter": "*",
+    "component/type": "*",
     "component/debug": "*",
     "visionmedia/superagent": "0.9.5",
     "visionmedia/debug": "*"
