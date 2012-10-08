@@ -121,7 +121,7 @@ Manager.prototype.subscribe = function(id, doc){
  */
 
 Manager.prototype.write = function(obj){
-  this.socket.write(json.stringify(obj));
+  this.socket.send(json.stringify(obj));
 };
 
 /**
