@@ -96,9 +96,87 @@ Document.prototype.$readyState = function(s){
 };
 
 /**
+ * Override `on`.
+ *
+ * @param {String} key, or regular event
+ * @param {String} optional, operation (eg: `set`, `$push`, `push`)
+ * @param {Function} callback
+ * @api public
+ */
+
+Document.prototype.on = function(key, op, fn){
+  if ('string' == type(op)) {
+    key = key + '$' + op.replace(/^\$/, '');
+    op = fn;
+  }
+  return Emitter.prototype.on.call(this, key, op);
+};
+
+/**
+ * Override `once`.
+ *
+ * @param {String} key, or regular event
+ * @param {String} optional, operation (eg: `set`, `$push`, `push`)
+ * @param {Function} callback
+ * @api public
+ */
+
+Document.prototype.once = function(key, op, fn){
+  if ('string' == type(op)) {
+    key = key + '$' + op.replace(/^\$/, '');
+    op = fn;
+  }
+  return Emitter.prototype.once.call(this, key, op);
+};
+
+/**
+ * Override `off`.
+ *
+ * @param {String} key, or regular event
+ * @param {String} optional, operation (eg: `set`, `$push`, `push`)
+ * @param {Function} callback
+ * @api public
+ */
+
+Document.prototype.off =
+Document.prototype.removeListener = function(key, op, fn){
+  if ('string' == type(op)) {
+    key = key + '$' + op.replace(/^\$/, '');
+    op = fn;
+  }
+  return Emitter.prototype.off.call(this, key, op);
+};
+
+/**
+ * Override `listeners`.
+ *
+ * @param {String} key, or regular event
+ * @param {String} optional, operation (eg: `set`, `$push`, `push`)
+ * @api public
+ */
+
+Document.prototype.listeners = function(key, op){
+  if (op) key = key + '$' + op.replace(/^\$/, '');
+  return Emitter.prototype.listeners.call(this, key);
+};
+
+/**
+ * Override `hasListeners`.
+ *
+ * @param {String} key, or regular event
+ * @param {String} optional, operation (eg: `set`, `$push`, `push`)
+ * @api public
+ */
+
+Document.prototype.hasListeners = function(key, op){
+  if (op) key = key + '$' + op.replace(/^\$/, '');
+  return Emitter.prototype.hasListeners.call(this, key);
+};
+
+/**
  * Called with the object payload.
  *
- * @param {
+ * @param {Object} doc payload
  * @api private
  */
 
