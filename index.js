@@ -34,10 +34,8 @@ function Manager(url){
   var self = this;
   this.socket = new Socket(url);
   this.socket.onopen = this.onOpen.bind(this);
-  this.socket.onmessage = function(msg){
-    self.onMessage(msg);
-  };
   this.socket.onclose = this.onClose.bind(this);
+  this.socket.onmessage = this.onMessage.bind(this);
   this.connected = false;
 }
 
