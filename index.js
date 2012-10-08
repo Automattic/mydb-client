@@ -37,10 +37,7 @@ function Manager(url){
   this.socket.onmessage = function(msg){
     self.onMessage(msg);
   };
-  this.socket.onclose = function(){
-    debug('mydb-client socket closed');
-    self.emit('disconnect');
-  };
+  this.socket.onclose = this.onClose.bind(this);
   this.connected = false;
 }
 
@@ -51,14 +48,27 @@ function Manager(url){
 Emitter(Manager.prototype);
 
 /**
- * Called upon upon.
+ * Called upon upon open.
  *
  * @api private
  */
 
 Manager.prototype.onOpen = function(){
+  debug('mydb-client socket open');
   this.connected = true;
   this.emit('connect');
+};
+
+/**
+ * Called upon upon close.
+ *
+ * @api private
+ */
+
+Manager.prototype.onClose = function(){
+  debug('mydb-client socket closed');
+  this.connected = false;
+  this.emit('disconnect');
 };
 
 /**
