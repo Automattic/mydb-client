@@ -381,7 +381,7 @@ Document.prototype.destroy = function(fn){
       throw new Error('Trying to destroy invalid resource');
 
     default:
-      var sid = this.$sid;
+      var sid = this.$sid();
       var self = this;
 
       // mark ready state
@@ -390,6 +390,7 @@ Document.prototype.destroy = function(fn){
       // unsubscribe
       this.$manager().on('unsubscribe', function unsubscribe(s){
         if (s == sid) {
+          debug('unsubscription "%s" complete', s);
           fn && fn();
           self.$readyState('unloaded');
           self.$manager().off('unsubscribe', unsubscribe);
