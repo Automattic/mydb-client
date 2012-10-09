@@ -25,13 +25,18 @@ module.exports = Manager;
 /**
  * Manager constructor.
  *
+ * Options:
+ *   - `headers` custom headers for the resource request
+ *
  * @param {String|Object} optional, url to connect socket to or eio opts
+ * @parma {Object} options
  * @api public
  */
 
-function Manager(url){
-  if (!(this instanceof Manager)) return new Manager(url);
-  var self = this;
+function Manager(url, opts){
+  if (!(this instanceof Manager)) return new Manager(url, opts);
+  opts = opts || {};
+  this.headers = opts.headers || {};
   this.socket = new Socket(url);
   this.socket.onopen = this.onOpen.bind(this);
   this.socket.onclose = this.onClose.bind(this);

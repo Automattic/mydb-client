@@ -290,7 +290,9 @@ Document.prototype.load = function(url, fn){
 
   // get the subscription id over REST
   var self = this;
-  var xhr = this.$xhr = request.get(url, function(res){
+  var xhr = request.get(url);
+  xhr.set(manager.headers);
+  xhr.end(function(res){
     // XXX: remove this check when superagent gets `abort`
     if (xhr == self.$xhr) {
       if (res.ok) {
@@ -304,7 +306,7 @@ Document.prototype.load = function(url, fn){
       debug('ignoring outdated resource subscription %s', res.text);
     }
   });
-
+  this.$xhr = xhr;
   if (fn) this.ready(fn);
   return this;
 };
@@ -392,6 +394,7 @@ Document.prototype.destroy = function(fn){
       throw new Error('Trying to destroy invalid resource');
 
     default:
+      var manager = this.$manager();
       var sid = this.$sid();
       var self = this;
 
@@ -399,7 +402,7 @@ Document.prototype.destroy = function(fn){
       this.$readyState('unloading');
 
       // unsubscribe
-      this.$manager().on('unsubscribe', function unsubscribe(s){
+      manager.on('unsubscribe', function unsubscribe(s){
         if (s == sid) {
           debug('unsubscription "%s" complete', s);
           fn && fn();
@@ -407,7 +410,11 @@ Document.prototype.destroy = function(fn){
           self.$manager().off('unsubscribe', unsubscribe);
         }
       });
-      this.$manager().unsubscribe(this.$sid(), this);
+      manager.unsubscribe(this.$sid(), this);
+
+      // remove payload / ops event listeners
+      manager.off('op', this.onOp);
+      manager.off('payload', this.onPayload);
       break;
   }
   return this;
