@@ -34,6 +34,10 @@ module.exports = Document;
 function Document(manager){
   this.$_manager = manager;
   this.$_readyState = 'unloaded';
+  this.onOp = this.onOp.bind(this);
+  this.onPayload = this.onPayload.bind(this);
+  manager.on('op', this.onOp);
+  manager.on('payload', this.onPayload);
 }
 
 /**
@@ -174,59 +178,66 @@ Document.prototype.hasListeners = function(key, op){
 };
 
 /**
- * Called with the object payload.
+ * Payloads listener.
  *
+ * @param {String} sid
  * @param {Object} doc payload
  * @api private
  */
 
-Document.prototype.$payload = function(obj){
-  debug('got payload %j', obj);
-  for (var i in obj) {
-    if (obj.hasOwnProperty(i)) {
-      this[i] = obj[i];
+Document.prototype.onPayload = function(sid, obj){
+  if (sid == this.$sid()) {
+    debug('got payload %j', obj);
+    for (var i in obj) {
+      if (obj.hasOwnProperty(i)) {
+        this[i] = obj[i];
+      }
     }
+    this.$readyState('loaded');
   }
-  this.$readyState('loaded');
 };
 
 /**
- * Called with each operation.
+ * Operations listener.
  *
+ * @param {String} sid
+ * @param {Array} operation data `[query, op]`
  * @api private
  */
 
-Document.prototype.$op = function(data){
-  debug('got operation %j', data);
-  var log = query(this, data[0], data[1]);
+Document.prototype.onOp = function(sid, data){
+  if (sid == this.$sid()) {
+    debug('got operation %j', data);
+    var log = query(this, data[0], data[1]);
 
-  for (var i = 0; i < log.length; i++) {
-    var obj = log[i];
-    var val = obj.value;
-    var key = obj.key;
-    var type = obj.op;
+    for (var i = 0; i < log.length; i++) {
+      var obj = log[i];
+      var val = obj.value;
+      var key = obj.key;
+      var type = obj.op;
 
-    // express $pop as a $pull
-    if ('$pop' == type) {
-      this.emit(key + '$pull', val, obj);
-    }
-
-    // express $rename as $unset + $set
-    if ('$unset' == type) {
-      this.emit(key + '$unset', null, obj);
-      this.emit(val + '$set', this.get(val), obj);
-    }
-
-    // express $pushAll/$pullAll as multiple single ops
-    if (/All/.test(type)) {
-      for (var ii = 0; ii < val.length; i++) {
-        this.emit(key + type.replace(/All/, ''), val[ii], obj);
+      // express $pop as a $pull
+      if ('$pop' == type) {
+        this.emit(key + '$pull', val, obj);
       }
-    } else {
-      this.emit(key + type, val, obj);
-    }
 
-    this.emit(key, this.get(key), obj);
+      // express $rename as $unset + $set
+      if ('$unset' == type) {
+        this.emit(key + '$unset', null, obj);
+        this.emit(val + '$set', this.get(val), obj);
+      }
+
+      // express $pushAll/$pullAll as multiple single ops
+      if (/All/.test(type)) {
+        for (var ii = 0; ii < val.length; i++) {
+          this.emit(key + type.replace(/All/, ''), val[ii], obj);
+        }
+      } else {
+        this.emit(key + type, val, obj);
+      }
+
+      this.emit(key, this.get(key), obj);
+    }
   }
 };
 
@@ -259,10 +270,10 @@ Document.prototype.load = function(url, fn){
     throw new Error('Trying to load resource, but doc is not unloaded');
   }
 
-  debug('subscribing to resource %s', url);
-
   var manager = this.$manager()
     , socket = manager.socket;
+
+  debug('subscribing to resource %s with headers %j', url, manager.headers);
 
   // mark ready state as loading the doc
   this.$readyState('loading');
