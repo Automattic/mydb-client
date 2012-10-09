@@ -79,20 +79,19 @@ Manager.prototype.onClose = function(){
 Manager.prototype.onMessage = function(msg){
   var obj = json.parse(msg);
   var sid = obj.i;
-  var doc = this.subscriptions[sid];
 
-  if (!doc && obj.d) {
+  if (!this.subscriptions[sid] && obj.d) {
     debug('ignoring data for inexisting subscription %s', sid);
     return;
   }
 
   switch (obj.e) {
     case 'p': // payload
-      doc.$payload(obj.d);
+      this.emit('payload', sid, obj.d);
       break;
 
     case 'o': // operation
-      doc.$op(obj.d);
+      this.emit('op', sid, obj.d);
       break;
 
     case 'u': // unsubscribe confirmation
@@ -109,9 +108,14 @@ Manager.prototype.onMessage = function(msg){
  */
 
 Manager.prototype.subscribe = function(id, doc){
-  this.subscriptions[id] = doc;
-  this.write({ e: 'subscribe', i: id });
-  this.emit('subscription', doc);
+  // keep count of the number of references to this subscription
+  this.subscriptions[id] = (this.subscriptions[id] || 0) + 1;
+
+  // we subscribe to the server upon the first one
+  if (1 == this.subscriptions[id]) {
+    this.write({ e: 'subscribe', i: id });
+    this.emit('subscription', doc);
+  }
 };
 
 /**
@@ -132,15 +136,20 @@ Manager.prototype.write = function(obj){
  */
 
 Manager.prototype.unsubscribe = function(id){
-  var sub = this.subscriptions[id];
-
-  if (!sub) {
+  // check that the subscription exists
+  if (!this.subscriptions[id]) {
     throw new Error('Trying to destroy inexisting subscription: ' + id);
   }
 
-  delete this.subscriptions[id];
-  this.write({ e: 'unsubscribe', i: id });
-  this.emit('destroy', sub);
+  // we substract from the reference count
+  var subs = --this.subscriptions[id];
+
+  // if no references are left we unsubscribe from the server
+  if (!subs) {
+    delete this.subscriptions[id];
+    this.write({ e: 'unsubscribe', i: id });
+    this.emit('destroy', id);
+  }
 };
 
 /**
