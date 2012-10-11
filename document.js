@@ -237,6 +237,7 @@ Document.prototype.onOp = function(sid, data){
       }
 
       this.emit(key, this.get(key), obj);
+      this.emit('op', obj);
     }
   }
 };
