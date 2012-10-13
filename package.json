@@ -9,7 +9,7 @@
     "type-component": "*",
     "json-component": "*",
     "emitter-component": "*",
-    "mongo-query": "git+ssh://git@github.com:LearnBoost/mongo-query.git#0.2.0",
+    "mongo-query": "git+ssh://git@github.com:LearnBoost/mongo-query.git#0.3.0",
     "debug": "*"
   },
   "component": {
