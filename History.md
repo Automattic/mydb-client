@@ -1,4 +1,9 @@
 
+1.0.7 / 2012-10-15
+==================
+
+  * document: fix `Document#ready` once the doc is ready.
+
 1.0.6 / 2012-10-14
 ==================
 
