@@ -6,14 +6,16 @@
 var Socket = require('engine.io-client').Socket
   , Document = require('./document')
   , debug = require('debug')('mydb-client')
-  , Emitter, json;
+  , type, json, Emitter;
 
 try {
-  Emitter = require('emitter');
+  type = require('type');
   json = require('json');
+  Emitter = require('emitter');
 } catch(e) {
-  Emitter = require('emitter-component');
+  type = require('type-component');
   json = require('json-component');
+  Emitter = require('emitter-component');
 }
 
 /**
@@ -92,16 +94,48 @@ Manager.prototype.onMessage = function(msg){
 
   switch (obj.e) {
     case 'p': // payload
+      this.process(obj.d);
       this.emit('payload', sid, obj.d);
       break;
 
     case 'o': // operation
+      this.process(obj.d[0]);
+      this.process(obj.d[1]);
       this.emit('op', sid, obj.d);
       break;
 
     case 'u': // unsubscribe confirmation
       this.emit('unsubscribe', sid);
       break;
+  }
+};
+
+/**
+ * Converts bson-json into JavaScript counterparts.
+ * Eg: `$oid` > string, `$date` > Date
+ *
+ * @param {Object} obj
+ * @api public
+ */
+
+Manager.prototype.process = function(obj){
+  if ('object' != type(obj)) return;
+  for (var i in obj) {
+    if (obj.hasOwnProperty(i)) {
+      var val = obj[i];
+      if ('object' == type(val)) {
+        if (val.$oid) {
+          // $oid => string
+          obj[i] = val.$oid;
+        } else if (val.$date) {
+          // $date => Date(ts)
+          obj[i] = new Date(val.$date);
+        } else {
+          // recurse
+          this.process(obj[i]);
+        }
+      }
+    }
   }
 };
 
