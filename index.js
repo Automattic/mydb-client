@@ -148,12 +148,15 @@ Manager.prototype.process = function(obj){
 
 Manager.prototype.subscribe = function(id, doc){
   // keep count of the number of references to this subscription
-  this.subscriptions[id] = (this.subscriptions[id] || 0) + 1;
+  this.subscriptions[id] = this.subscriptions[id] || [];
+  this.subscriptions[id].push(doc);
 
   // we subscribe to the server upon the first one
-  if (1 == this.subscriptions[id]) {
+  if (1 == this.subscriptions[id].length) {
     this.write({ e: 'subscribe', i: id });
     this.emit('subscription', doc);
+  } else {
+    doc.onPayload(id, this.subscriptions[id][0].$payload());
   }
 };
 
@@ -176,15 +179,15 @@ Manager.prototype.write = function(obj){
 
 Manager.prototype.unsubscribe = function(id){
   // check that the subscription exists
-  if (!this.subscriptions[id]) {
+  if (!this.subscriptions[id].length) {
     throw new Error('Trying to destroy inexisting subscription: ' + id);
   }
 
   // we substract from the reference count
-  var subs = --this.subscriptions[id];
+  this.subscriptions[id].shift();
 
   // if no references are left we unsubscribe from the server
-  if (!subs) {
+  if (!this.subscriptions[id].length) {
     delete this.subscriptions[id];
     this.write({ e: 'unsubscribe', i: id });
     this.emit('destroy', id);

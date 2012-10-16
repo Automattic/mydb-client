@@ -178,6 +178,17 @@ Document.prototype.hasListeners = function(key, op){
 };
 
 /**
+ * Gets the payload
+ *
+ * @return {Object} payload
+ * @api private
+ */
+
+Document.prototype.$payload = function(){
+  return this.$_payload;
+};
+
+/**
  * Payloads listener.
  *
  * @param {String} sid
@@ -188,6 +199,7 @@ Document.prototype.hasListeners = function(key, op){
 Document.prototype.onPayload = function(sid, obj){
   if (sid == this.$sid()) {
     debug('got payload %j', obj);
+    this.$_payload = obj;
     for (var i in obj) {
       if (obj.hasOwnProperty(i)) {
         this[i] = obj[i];
