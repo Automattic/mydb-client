@@ -1,4 +1,10 @@
 
+1.1.0 / 2012-10-15
+==================
+
+  * index: added `$oid`/`$date` processing
+  * package: bumped `mongo-query`
+
 1.0.8 / 2012-10-15
 ==================
 
