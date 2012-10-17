@@ -228,6 +228,11 @@ Document.prototype.onOp = function(sid, data){
       var key = obj.key;
       var type = obj.op;
 
+      // express $addToSet as a $push
+      if ('$addToSet' == type) {
+        this.emit(key + '$pull', val, obj);
+      }
+
       // express $pop as a $pull
       if ('$pop' == type) {
         this.emit(key + '$pull', val, obj);
