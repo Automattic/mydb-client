@@ -6,15 +6,17 @@
 var Socket = require('engine.io-client').Socket
   , Document = require('./document')
   , debug = require('debug')('mydb-client')
-  , type, json, Emitter;
+  , type, json, clone, Emitter;
 
 try {
   type = require('type');
   json = require('json');
+  clone = require('clone');
   Emitter = require('emitter');
 } catch(e) {
   type = require('type-component');
   json = require('json-component');
+  clone = require('clone-component');
   Emitter = require('emitter-component');
 }
 
@@ -156,7 +158,7 @@ Manager.prototype.subscribe = function(id, doc){
     this.write({ e: 'subscribe', i: id });
     this.emit('subscription', doc);
   } else {
-    doc.onPayload(id, this.subscriptions[id][0].$payload());
+    doc.onPayload(id, clone(this.subscriptions[id][0].$payload()));
   }
 };
 
