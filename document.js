@@ -400,7 +400,7 @@ Document.prototype.each = function(key, fn){
 Document.prototype.destroy = function(fn){
   switch (this.$readyState()) {
     case 'loading':
-      if (this.xhr.abort) {
+      if (this.$xhr.abort) {
         // XXX: remove this check when superagent gets `abort`
         this.$xhr.abort();
       }
