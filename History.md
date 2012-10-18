@@ -1,4 +1,10 @@
 
+1.1.4 / 2012-10-18
+==================
+
+  * index: implement payload cloning
+  * document: fix xhr aborting
+
 1.1.3 / 2012-10-17
 ==================
 
