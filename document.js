@@ -239,7 +239,7 @@ Document.prototype.onOp = function(sid, data){
       }
 
       // express $rename as $unset + $set
-      if ('$unset' == type) {
+      if ('$rename' == type) {
         this.emit(key + '$unset', null, obj);
         this.emit(val + '$set', this.get(val), obj);
       }
