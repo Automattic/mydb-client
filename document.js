@@ -241,6 +241,7 @@ Document.prototype.onOp = function(sid, data){
       // express $rename as $unset + $set
       if ('$rename' == type) {
         this.emit(key + '$unset', null, obj);
+        this.emit(val, this.get(val), obj);
         this.emit(val + '$set', this.get(val), obj);
       }
 
