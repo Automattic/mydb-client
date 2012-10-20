@@ -27,6 +27,12 @@ try {
 module.exports = Manager;
 
 /**
+ * Noop.
+ */
+
+function noop(){}
+
+/**
  * Manager constructor.
  *
  * Options:
@@ -41,12 +47,9 @@ function Manager(url, opts){
   if (!(this instanceof Manager)) return new Manager(url, opts);
   opts = opts || {};
   this.headers = opts.headers || {};
-  this.socket = new Socket(url);
-  this.socket.onopen = this.onOpen.bind(this);
-  this.socket.onclose = this.onClose.bind(this);
-  this.socket.onmessage = this.onMessage.bind(this);
   this.connected = false;
   this.subscriptions = {};
+  this.open(url);
 }
 
 /**
@@ -54,6 +57,35 @@ function Manager(url, opts){
  */
 
 Emitter(Manager.prototype);
+
+/**
+ * Called upon `open`.
+ *
+ * @param {String} url
+ * @api private
+ */
+
+Manager.prototype.open =
+Manager.prototype.reconnect = function(url){
+  if (!url && this.url) url = this.url;
+
+  if (this.socket) {
+    this.socket.onopen = noop;
+    this.socket.onclose = noop;
+    this.socket.onmessage = noop;
+    this.socket.close();
+  }
+
+  if (this.connected) {
+    this.onClose();
+  }
+
+  this.socket = new Socket(url);
+  this.socket.onopen = this.onOpen.bind(this);
+  this.socket.onclose = this.onClose.bind(this);
+  this.socket.onmessage = this.onMessage.bind(this);
+  this.url = url;
+};
 
 /**
  * Called upon upon open.
