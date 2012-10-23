@@ -3,7 +3,7 @@
   "version": "1.1.7",
   "private": true,
   "dependencies": {
-    "engine.io-client": "0.3.8",
+    "engine.io-client": "0.3.9",
     "superagent": "0.9.5",
     "dot-component": "0.1.0",
     "type-component": "*",
