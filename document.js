@@ -271,7 +271,7 @@ Document.prototype.onOp = function(sid, data){
 Document.prototype.ready = function(fn){
   if ('loaded' == this.$readyState()) {
     setTimeout(fn, 0);
-  } else if ('loading' == this.$readyState()) {
+  } else {
     this.once('$state:loaded', fn);
   }
   return this;
