@@ -190,7 +190,9 @@ Manager.prototype.subscribe = function(id, doc){
     this.write({ e: 'subscribe', i: id });
     this.emit('subscription', doc);
   } else {
-    doc.onPayload(id, clone(this.subscriptions[id][0].$payload()));
+    var d = this.subscriptions[id][0].ready(function(){
+      doc.onPayload.call(doc, id, d.$payload());
+    });
   }
 };
 
