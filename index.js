@@ -191,7 +191,7 @@ Manager.prototype.subscribe = function(id, doc){
     this.emit('subscription', doc);
   } else {
     var d = this.subscriptions[id][0].ready(function(){
-      doc.onPayload.call(doc, id, d.$payload());
+      doc.onPayload.call(doc, id, clone(d.$payload()));
     });
   }
 };
