@@ -1,4 +1,9 @@
 
+1.1.11 / 2012-11-19
+===================
+
+  * document: set up event listeners on `load` to fix multiple subscriptions (fixes #11)
+
 1.1.10 / 2012-10-25
 ===================
 
