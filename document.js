@@ -36,8 +36,6 @@ function Document(manager){
   this.$_readyState = 'unloaded';
   this.onOp = this.onOp.bind(this);
   this.onPayload = this.onPayload.bind(this);
-  manager.on('op', this.onOp);
-  manager.on('payload', this.onPayload);
 }
 
 /**
@@ -293,6 +291,10 @@ Document.prototype.load = function(url, fn){
     , socket = manager.socket;
 
   debug('subscribing to resource %s with headers %j', url, manager.headers);
+
+  // set up manager event listeners
+  manager.on('op', this.onOp);
+  manager.on('payload', this.onPayload);
 
   // mark ready state as loading the doc
   this.$readyState('loading');
