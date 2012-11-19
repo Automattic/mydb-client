@@ -204,6 +204,7 @@ Document.prototype.onPayload = function(sid, obj){
       }
     }
     this.$readyState('loaded');
+    this.emit('ready');
   }
 };
 
@@ -270,7 +271,7 @@ Document.prototype.ready = function(fn){
   if ('loaded' == this.$readyState()) {
     setTimeout(fn, 0);
   } else {
-    this.once('$state:loaded', fn);
+    this.once('ready', fn);
   }
   return this;
 };
