@@ -1,6 +1,6 @@
 {
   "name": "mydb-client",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "private": true,
   "dependencies": {
     "engine.io-client": "0.3.9",
