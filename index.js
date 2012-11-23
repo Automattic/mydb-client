@@ -168,6 +168,10 @@ Manager.prototype.process = function(obj){
           // recurse
           this.process(obj[i]);
         }
+      } else if ('array' == type(val)) {
+        for (var ii = 0; ii < val.length; ii++) {
+          this.process(val[ii]);
+        }
       }
     }
   }
