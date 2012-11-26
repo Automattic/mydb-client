@@ -427,9 +427,9 @@ Document.prototype.destroy = function(fn){
       manager.on('unsubscribe', function unsubscribe(s){
         if (s == sid) {
           debug('unsubscription "%s" complete', s);
-          fn && fn();
           self.$readyState('unloaded');
           self.$manager().off('unsubscribe', unsubscribe);
+          fn && fn();
         }
       });
       manager.unsubscribe(this.$sid(), this);
