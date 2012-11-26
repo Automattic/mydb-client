@@ -36,6 +36,7 @@ function Document(manager){
   this.$_readyState = 'unloaded';
   this.onOp = this.onOp.bind(this);
   this.onPayload = this.onPayload.bind(this);
+  this.$keys = [];
 }
 
 /**
@@ -201,6 +202,9 @@ Document.prototype.onPayload = function(sid, obj){
     for (var i in obj) {
       if (obj.hasOwnProperty(i)) {
         this[i] = obj[i];
+
+        // log the key for cleanup
+        this.$keys.push(i);
       }
     }
     this.$readyState('loaded');
@@ -226,6 +230,9 @@ Document.prototype.onOp = function(sid, data){
       var val = obj.value;
       var key = obj.key;
       var type = obj.op;
+
+      // log the key as internal for cleanup
+      this.$keys.push(key.split('.')[0]);
 
       // express $addToSet as a $push
       if ('$addToSet' == type) {
@@ -296,6 +303,14 @@ Document.prototype.load = function(url, fn){
   // set up manager event listeners
   manager.on('op', this.onOp);
   manager.on('payload', this.onPayload);
+
+  // cleanup existing state
+  if (this.$keys) {
+    for (var i = 0; i < this.$keys.length; i++) {
+      delete this[this.$keys[i]];
+    }
+    this.$keys = [];
+  }
 
   // mark ready state as loading the doc
   this.$readyState('loading');
