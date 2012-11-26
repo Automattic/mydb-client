@@ -244,9 +244,9 @@ Document.prototype.onOp = function(sid, data){
         this.emit(val + '$set', this.get(val), obj);
       }
 
-      // express $pushAll/$pullAll as multiple single ops
-      if (/All/.test(type)) {
-        for (var ii = 0; ii < val.length; i++) {
+      // express $pushAll/$pullAll/$pull as multiple single ops
+      if ('$pull' == type || /All/.test(type)) {
+        for (var ii = 0; ii < val.length; ii++) {
           this.emit(key + type.replace(/All/, ''), val[ii], obj);
         }
       } else {
