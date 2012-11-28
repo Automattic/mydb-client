@@ -329,22 +329,29 @@ Document.prototype.load = function(url, fn){
   var self = this;
   var xhr = request.get(url);
   xhr.set(manager.headers);
-  xhr.end(function(res){
+  xhr.end(function(err, res){
     // XXX: remove this check when superagent gets `abort`
     if (xhr == self.$xhr) {
+      if (fn && err) return fn(err);
       if (res.ok) {
+        if (fn) self.ready(function(){ fn(null); });
         debug('got subscription id "%s"', res.text);
         self.$_sid = res.text;
         manager.subscribe(res.text, self);
       } else {
         debug('subscription error');
+        if (fn) {
+          var err = new Error('Subscription error');
+          err.url = url;
+          err.status = res.status;
+          fn(err);
+        }
       }
     } else {
       debug('ignoring outdated resource subscription %s', res.text);
     }
   });
   this.$xhr = xhr;
-  if (fn) this.ready(fn);
   return this;
 };
 
