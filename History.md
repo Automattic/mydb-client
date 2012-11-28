@@ -1,4 +1,14 @@
 
+1.2.0 / 2012-11-28
+==================
+
+  * document: make `destroy` work for all states
+  * document: introduce `cleanup` method to wipe state
+  * load: make sure to `load` only when the socket connects
+  * document: make sure `$state` events get called only upon change
+  * index: moving defer logic to document and ignore `.load` with no url
+  * document: allow for destroying in `loading` state
+
 1.1.18 / 2012-11-28
 ===================
 
