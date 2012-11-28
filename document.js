@@ -330,6 +330,12 @@ Document.prototype.load = function(url, fn){
   var xhr = request.get(url);
   xhr.set(manager.headers);
   xhr.end(function(err, res){
+    if (!res) {
+      // browser superagent doesn't support err, res
+      res = err;
+      err = null;
+    }
+
     // XXX: remove this check when superagent gets `abort`
     if (xhr == self.$xhr) {
       if (fn && err) return fn(err);
