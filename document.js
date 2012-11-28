@@ -293,73 +293,75 @@ Document.prototype.ready = function(fn){
  */
 
 Document.prototype.load = function(url, fn){
-  if ('unloaded' != this.$readyState()) {
-    throw new Error('Trying to load resource, but doc is not unloaded');
-  }
-
-  var manager = this.$manager()
-    , socket = manager.socket;
-
-  debug('subscribing to resource %s with headers %j', url, manager.headers);
-
-  // set up manager event listeners
-  manager.on('op', this.onOp);
-  manager.on('payload', this.onPayload);
-
-  // cleanup existing state
-  if (this.$keys) {
-    for (var i = 0; i < this.$keys.length; i++) {
-      delete this[this.$keys[i]];
-    }
-    this.$keys = [];
-  }
-
-  // mark ready state as loading the doc
-  this.$readyState('loading');
-
-  // if in node, try to prefix the url if relative
-  if ('undefined' != typeof process && '/' == url[0]) {
-    url = (socket.secure ? 'https' : 'http') + '://' +
-            socket.host + ':' + socket.port + url;
-  }
-
-  // keep track of current url
-  this.$_url = url;
-  url = url + (~url.indexOf('?') ? '' : '?') + 'my=1&t=' + Date.now();
-
-  // get the subscription id over REST
+  var manager = this.$manager();
+  var socket = manager.socket;
   var self = this;
-  var xhr = request.get(url);
-  xhr.set(manager.headers);
-  xhr.end(function(err, res){
-    if (!res) {
-      // browser superagent doesn't support err, res
-      res = err;
-      err = null;
+
+  if (manager.connected) {
+    load();
+  } else {
+    manager.once('connect', load);
+  }
+
+  function load(){
+    debug('loading %s with headers %j', url, manager.headers);
+
+    // perform cleanup
+    self.cleanup();
+
+    // set up manager event listeners
+    manager.on('op', self.onOp);
+    manager.on('payload', self.onPayload);
+
+    // mark ready state as loading the doc
+    self.$readyState('loading');
+
+    // if in node, try to prefix the url if relative
+    if ('undefined' != typeof process && '/' == url[0]) {
+      url = (socket.secure ? 'https' : 'http') + '://' +
+              socket.host + ':' + socket.port + url;
     }
 
-    // XXX: remove this check when superagent gets `abort`
-    if (xhr == self.$xhr) {
-      if (fn && err) return fn(err);
-      if (res.ok) {
-        if (fn) self.ready(function(){ fn(null); });
-        debug('got subscription id "%s"', res.text);
-        self.$_sid = res.text;
-        manager.subscribe(res.text, self);
-      } else {
-        debug('subscription error');
-        if (fn) {
-          var err = new Error('Subscription error');
-          err.url = url;
-          err.status = res.status;
-          fn(err);
+    // keep track of current url
+    self.$_url = url;
+    url = url + (~url.indexOf('?') ? '' : '?') + 'my=1&t=' + Date.now();
+
+    // get the subscription id over REST
+    var xhr = request.get(url);
+    xhr.set(manager.headers);
+    xhr.end(function(err, res){
+      // XXX: remove this check when superagent gets `abort`
+      if (xhr == self.$xhr) {
+        if (!res) {
+          // browser superagent doesn't support err, res
+          res = err;
+          err = null;
         }
+
+        if (fn && err) return fn(err);
+
+        if (res.ok) {
+          if (fn) self.ready(function(){ fn(null); });
+          debug('got subscription id "%s"', res.text);
+          self.$_sid = res.text;
+          manager.subscribe(res.text, self);
+        } else {
+          debug('subscription error %d', res.status);
+          if (fn) {
+            var err = new Error('Subscription error');
+            err.url = url;
+            err.status = res.status;
+            fn(err);
+          }
+        }
+      } else {
+        debug('ignoring outdated resource subscription %s', res.text);
       }
-    } else {
-      debug('ignoring outdated resource subscription %s', res.text);
-    }
-  });
-  this.$xhr = xhr;
+    });
+
+    self.$xhr = xhr;
+  }
+
   return this;
 };
 
