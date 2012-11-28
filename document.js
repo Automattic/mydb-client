@@ -437,6 +437,8 @@ Document.prototype.destroy = function(fn){
         this.$xhr.abort();
       }
       this.$xhr = null;
+      this.$readyState('unloaded');
+      if (fn) fn(null);
       break;
 
     case 'unloading':
