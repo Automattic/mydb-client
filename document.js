@@ -426,6 +426,36 @@ Document.prototype.each = function(key, fn){
 };
 
 /**
+ * Cleans up event listeners and data.
+ *
+ * @api private
+ */
+
+Document.prototype.cleanup = function(){
+  if (this.$xhr) {
+    if (this.$xhr.abort) {
+      // XXX: remove this check when superagent gets `abort`
+      this.$xhr.abort();
+    }
+    this.$xhr = null;
+  }
+
+  this.$_sid = null;
+  this.$_url = null;
+
+  // cleanup existing state
+  if (this.$keys) {
+    for (var i = 0; i < this.$keys.length; i++) {
+      delete this[this.$keys[i]];
+    }
+    this.$keys = [];
+  }
+
+  // ensure `unloaded` ready state
+  this.$readyState('unloaded');
+};
+
+/**
  * Destroys the subscription (if any)
  *
  * @param {Function} optional, callback
