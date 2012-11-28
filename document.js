@@ -88,10 +88,12 @@ Document.prototype.$url = function(){
 
 Document.prototype.$readyState = function(s){
   if (s) {
-    debug('setting state %s', s);
-    this.$_readyState = s;
-    this.emit('$state', s);
-    this.emit('$state:' + s);
+    if (s != this.$_readyState) {
+      debug('setting state %s', s);
+      this.$_readyState = s;
+      this.emit('$state', s);
+      this.emit('$state:' + s);
+    }
     return this;
   } else {
     return this.$_readyState;
