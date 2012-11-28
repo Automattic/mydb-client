@@ -464,44 +464,45 @@ Document.prototype.cleanup = function(){
  */
 
 Document.prototype.destroy = function(fn){
+  // clear callbacks prior to destroy
+  this._callbacks = {};
+
+  // remove payload / ops event listeners
+  var manager = this.$manager();
+  manager.off('op', this.onOp);
+  manager.off('payload', this.onPayload);
+
   switch (this.$readyState()) {
     case 'loading':
-      if (this.$xhr.abort) {
-        // XXX: remove this check when superagent gets `abort`
-        this.$xhr.abort();
-      }
-      this.$xhr = null;
-      this.$readyState('unloaded');
+    case 'unloading':
+    case 'unloaded':
+      this.cleanup();
       if (fn) fn(null);
       break;
 
-    case 'unloading':
-    case 'unloaded':
-      throw new Error('Trying to destroy invalid resource');
-
-    default:
-      var manager = this.$manager();
+    case 'loaded':
+      // get sid before cleanup
       var sid = this.$sid();
-      var self = this;
+
+      // clean up
+      this.cleanup();
 
       // mark ready state
       this.$readyState('unloading');
 
       // unsubscribe
+      var self = this;
       manager.on('unsubscribe', function unsubscribe(s){
         if (s == sid) {
           debug('unsubscription "%s" complete', s);
           self.$readyState('unloaded');
           self.$manager().off('unsubscribe', unsubscribe);
-          fn && fn();
+          if (fn) fn(null);
         }
       });
-      manager.unsubscribe(this.$sid(), this);
-
-      // remove payload / ops event listeners
-      manager.off('op', this.onOp);
-      manager.off('payload', this.onPayload);
+      manager.unsubscribe(sid, this);
       break;
   }
+
   return this;
 };
