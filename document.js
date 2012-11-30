@@ -462,8 +462,13 @@ Document.prototype.cleanup = function(){
  */
 
 Document.prototype.destroy = function(fn){
+  var sid = this.$sid();
+
   // clear callbacks prior to destroy
   this._callbacks = {};
+
+  // clean up
+  this.cleanup();
 
   // remove payload / ops event listeners
   var manager = this.$manager();
@@ -473,15 +478,11 @@ Document.prototype.destroy = function(fn){
   var state = this.$readyState();
 
   // unsubscribe if we have a sid
-  var sid = this.$sid();
   if (sid) {
     manager.unsubscribe(sid, this);
  
     // get sid before cleanup
     this.$_unloading = sid;
-
-    // clean up
-    this.cleanup();
 
     // mark ready state
     this.$readyState('unloading');
