@@ -1,4 +1,11 @@
 
+1.2.4 / 2012-11-30
+==================
+
+  * document: always cleanup upon destroy
+  * document: run abort only on browser
+  * document: always `abort` xhrs
+
 1.2.3 / 2012-11-30
 ==================
 
