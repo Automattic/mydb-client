@@ -181,6 +181,7 @@ Manager.prototype.process = function(obj){
  * Subscribes to the given sid.
  *
  * @param {String} id
+ * @param {Document} doc
  * @api private
  */
 
@@ -217,17 +218,19 @@ Manager.prototype.write = function(obj){
  * @api private
  */
 
-Manager.prototype.unsubscribe = function(id){
+Manager.prototype.unsubscribe = function(id, doc){
+  var subs = this.subscriptions[id];
+
   // check that the subscription exists
-  if (!this.subscriptions[id].length) {
+  if (!subs.length) {
     throw new Error('Trying to destroy inexisting subscription: ' + id);
   }
 
   // we substract from the reference count
-  this.subscriptions[id].shift();
+  subs.splice(subs.indexOf(doc), 1);
 
   // if no references are left we unsubscribe from the server
-  if (!this.subscriptions[id].length) {
+  if (!subs.length) {
     delete this.subscriptions[id];
     this.write({ e: 'unsubscribe', i: id });
     this.emit('destroy', id);
