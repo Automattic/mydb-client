@@ -1,4 +1,10 @@
 
+1.2.2 / 2012-11-30
+==================
+
+  * index: improve subscription re-using logic
+  * document: improve destroy logic
+
 1.2.1 / 2012-11-30
 ==================
 
