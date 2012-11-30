@@ -435,10 +435,7 @@ Document.prototype.each = function(key, fn){
 
 Document.prototype.cleanup = function(){
   if (this.$xhr) {
-    if (this.$xhr.abort) {
-      // XXX: remove this check when superagent gets `abort`
-      this.$xhr.abort();
-    }
+    this.$xhr.abort();
     this.$xhr = null;
   }
 
