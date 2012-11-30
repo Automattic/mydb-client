@@ -307,7 +307,9 @@ Document.prototype.load = function(url, fn){
     debug('loading %s with headers %j', url, manager.headers);
 
     // perform cleanup
-    self.cleanup();
+    if ('loading' == self.$readyState()) {
+      self.destroy();
+    }
 
     // set up manager event listeners
     manager.on('op', self.onOp);
@@ -450,9 +452,6 @@ Document.prototype.cleanup = function(){
     }
     this.$keys = [];
   }
-
-  // ensure `unloaded` ready state
-  this.$readyState('unloaded');
 };
 
 /**
@@ -472,39 +471,46 @@ Document.prototype.destroy = function(fn){
   manager.off('op', this.onOp);
   manager.off('payload', this.onPayload);
 
-  switch (this.$readyState()) {
-    case 'loading':
-    case 'unloading':
-    case 'unloaded':
-      this.cleanup();
-      if (fn) fn(null);
-      break;
+  var state = this.$readyState();
 
-    case 'loaded':
-      // get sid before cleanup
-      var sid = this.$sid();
-      this.$_unloading = sid;
+  // unsubscribe if we have a sid
+  var sid = this.$sid();
+  if (sid) {
+    manager.unsubscribe(sid, this);
+ 
+    // get sid before cleanup
+    this.$_unloading = sid;
 
-      // clean up
-      this.cleanup();
+    // clean up
+    this.cleanup();
 
-      // mark ready state
-      this.$readyState('unloading');
+    // mark ready state
+    this.$readyState('unloading');
 
-      // unsubscribe
-      var self = this;
-      manager.on('unsubscribe', function unsubscribe(s){
-        if (s == self.$_unloading && 'unloading' == self.$readyState()) {
-          self.$readyState('unloaded');
-        }
-        if (s == sid) {
-          debug('unsubscription "%s" complete', s);
-          manager.off('unsubscribe', unsubscribe);
-          if (fn) fn(null);
-        }
+    // unsubscribe
+    var self = this;
+    manager.on('unsubscribe', function unsubscribe(s){
+      if (s == self.$_unloading && 'unloading' == self.$readyState()) {
+        self.$readyState('unloaded');
+      }
+      if (s == sid) {
+        debug('unsubscription "%s" complete', s);
+        manager.off('unsubscribe', unsubscribe);
+        if (fn) fn(null);
+      }
+    });
+  }
+
+  if (fn) {
+    if (state == 'unloading') {
+      this.once('$state:unloaded', function(){
+        fn(null);
       });
-      manager.unsubscribe(sid, this);
-      break;
+    } else if (state == 'unloaded') {
+      setTimeout(function(){
+        fn(null);
+      }, 0);
+    }
   }
 
   return this;
