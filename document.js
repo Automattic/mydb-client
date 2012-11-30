@@ -483,6 +483,7 @@ Document.prototype.destroy = function(fn){
     case 'loaded':
       // get sid before cleanup
       var sid = this.$sid();
+      this.$_unloading = sid;
 
       // clean up
       this.cleanup();
@@ -493,10 +494,12 @@ Document.prototype.destroy = function(fn){
       // unsubscribe
       var self = this;
       manager.on('unsubscribe', function unsubscribe(s){
+        if (s == self.$_unloading && 'unloading' == self.$readyState()) {
+          self.$readyState('unloaded');
+        }
         if (s == sid) {
           debug('unsubscription "%s" complete', s);
-          self.$readyState('unloaded');
-          self.$manager().off('unsubscribe', unsubscribe);
+          manager.off('unsubscribe', unsubscribe);
           if (fn) fn(null);
         }
       });
