@@ -348,9 +348,7 @@ Document.prototype.load = function(url, fn){
 
         if (res.ok) {
           if (fn) self.ready(function(){ fn(null); });
-          debug('got subscription id "%s"', res.text);
-          self.$_sid = res.text;
-          manager.subscribe(res.text, self);
+          self.$subscribe(res.text);
         } else {
           debug('subscription error %d', res.status);
           if (fn) {
@@ -369,6 +367,19 @@ Document.prototype.load = function(url, fn){
   }
 
   return this;
+};
+
+/**
+ * Subscribe to a given `sid`.
+ *
+ * @param {String} subscription id
+ * @api public
+ */
+
+Document.prototype.$subscribe = function(sid){
+  debug('got subscription id "%s"', sid);
+  this.$_sid = sid;
+  this.$manager.subscribe(sid, this);
 };
 
 /**
