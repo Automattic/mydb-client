@@ -300,11 +300,15 @@ Document.prototype.load = function(url, fn){
   if (manager.connected) {
     load();
   } else {
+    this.connectLoad = load;
     manager.once('connect', load);
   }
 
   function load(){
     debug('loading %s with headers %j', url, manager.headers);
+
+    // cleanup
+    delete self.connectLoad;
 
     // perform cleanup
     if ('loading' == self.$readyState()) {
@@ -475,6 +479,13 @@ Document.prototype.destroy = function(fn){
   manager.off('op', this.onOp);
   manager.off('payload', this.onPayload);
 
+  // clean up pending `load`
+  if (this.connectLoad) {
+    manager.off('connect', this.connectLoad);
+    delete this.connectLoad;
+  }
+
+  // get current ready state
   var state = this.$readyState();
 
   // unsubscribe if we have a sid
