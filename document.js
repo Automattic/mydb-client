@@ -325,7 +325,7 @@ Document.prototype.load = function(url, fn){
     // if in node, try to prefix the url if relative
     if ('undefined' != typeof process && '/' == url[0]) {
       url = (socket.secure ? 'https' : 'http') + '://' +
-              socket.host + ':' + socket.port + url;
+              socket.hostname + ':' + socket.port + url;
     }
 
     // keep track of current url
