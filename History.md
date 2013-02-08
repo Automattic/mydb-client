@@ -1,4 +1,11 @@
 
+1.3.0 / 2013-02-08
+==================
+
+  * package: bumped `engine.io-client`
+  * document: added `$subscribe` method
+  * document: better cleanup if destroy is called while connecting
+
 1.2.4 / 2012-11-30
 ==================
 
