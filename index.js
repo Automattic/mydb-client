@@ -3,7 +3,7 @@
  * Module dependencies.
  */
 
-var Socket = require('engine.io-client').Socket
+var Socket = require('engine.io')
   , Document = require('./document')
   , debug = require('debug')('mydb-client')
   , type, json, clone, Emitter;
