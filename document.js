@@ -379,7 +379,7 @@ Document.prototype.load = function(url, fn){
 Document.prototype.$subscribe = function(sid){
   debug('got subscription id "%s"', sid);
   this.$_sid = sid;
-  this.$manager.subscribe(sid, this);
+  this.$manager().subscribe(sid, this);
 };
 
 /**
