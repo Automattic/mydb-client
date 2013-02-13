@@ -451,7 +451,9 @@ Document.prototype.each = function(key, fn){
 Document.prototype.cleanup = function(){
   if (this.$xhr) {
     if ('undefined' != typeof window) {
-      this.$xhr.abort();
+      try {
+        this.$xhr.abort();
+      }catch(e){}
     }
     this.$xhr = null;
   }
