@@ -36,9 +36,7 @@ module.exports = Document;
 function Document(manager){
   this.$_manager = manager;
   this.$_readyState = 'unloaded';
-  this.onOp = this.onOp.bind(this);
-  this.onPayload = this.onPayload.bind(this);
-  this.$keys = [];
+  this.$onOp = this.$onOp.bind(this);
 }
 
 /**
