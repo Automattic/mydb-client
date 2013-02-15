@@ -11,10 +11,12 @@ var clone, dot, type, Emitter;
 try {
   dot = require('dot');
   type = require('type');
+  clone = require('clone');
   Emitter = require('emitter');
 } catch(e){
   dot = require('dot-component');
   type = require('type-component');
+  clone = require('clone-component');
   Emitter = require('emitter-component');
 }
 
