@@ -226,9 +226,6 @@ Document.prototype.$onOp = function(sid, data){
       var key = obj.key;
       var type = obj.op;
 
-      // log the key as internal for cleanup
-      this.$keys.push(key.split('.')[0]);
-
       // express $addToSet as a $push
       if ('$addToSet' == type) {
         this.emit(key + '$push', val, obj);
