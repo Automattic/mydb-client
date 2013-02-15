@@ -287,11 +287,11 @@ Document.prototype.load = function(url, fn){
   var socket = manager.socket;
   var self = this;
 
-  if (manager.connected) {
+  if (manager.id) {
     load();
   } else {
     this.connectLoad = load;
-    manager.once('connect', load);
+    manager.once('id', load);
   }
 
   function load(){
@@ -480,12 +480,11 @@ Document.prototype.destroy = function(fn){
 
   // remove payload / ops event listeners
   var manager = this.$manager();
-  manager.off('op', this.onOp);
-  manager.off('payload', this.onPayload);
+  manager.off('op', this.$onOp);
 
   // clean up pending `load`
   if (this.connectLoad) {
-    manager.off('connect', this.connectLoad);
+    manager.off('id', this.connectLoad);
     delete this.connectLoad;
   }
 
