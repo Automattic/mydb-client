@@ -3,10 +3,10 @@
  * Module dependencies.
  */
 
-var request = require('superagent')
-  , query = require('mongo-query')
-  , debug = require('debug')('mydb-client:document')
-  , dot, type, Emitter;
+var request = require('superagent');
+var query = require('mongo-query');
+var debug = require('debug')('mydb-client:document');
+var clone, dot, type, Emitter;
 
 try {
   dot = require('dot');
