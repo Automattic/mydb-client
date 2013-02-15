@@ -325,6 +325,17 @@ Document.prototype.load = function(url, fn){
     // get the subscription id over REST
     var xhr = request.get(url);
     xhr.set(manager.headers);
+
+    // include socket id
+    xhr.set('X-MyDB-SocketId', manager.id);
+
+    // if we already have a document for this url
+    // include the id to potentially leverage our cache
+    var cached = manager.cache[self.$_url];
+    if (cached) {
+      xhr.set('X-MyDB-Id', cached.$id);
+    }
+
     xhr.end(function(err, res){
       // XXX: remove this check when superagent gets `abort`
       if (xhr == self.$xhr) {
