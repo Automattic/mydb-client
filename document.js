@@ -192,26 +192,19 @@ Document.prototype.$payload = function(){
 /**
  * Payloads listener.
  *
- * @param {String} sid
  * @param {Object} doc payload
  * @api private
  */
 
-Document.prototype.onPayload = function(sid, obj){
-  if (sid == this.$sid()) {
-    debug('got payload %j', obj);
-    this.$_payload = obj;
-    for (var i in obj) {
-      if (obj.hasOwnProperty(i)) {
-        this[i] = obj[i];
-
-        // log the key for cleanup
-        this.$keys.push(i);
-      }
+Document.prototype.$onPayload = function(obj){
+  debug('got payload %j', obj);
+  for (var i in obj) {
+    if (obj.hasOwnProperty(i)) {
+      this[i] = obj[i];
     }
-    this.$readyState('loaded');
-    this.emit('ready');
   }
+  this.$readyState('loaded');
+  this.emit('ready');
 };
 
 /**
