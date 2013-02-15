@@ -349,7 +349,7 @@ Document.prototype.load = function(url, fn){
 
         if (res.ok) {
           if (fn) self.ready(function(){ fn(null); });
-          self.$subscribe(res.text);
+          self.$onresponse(res);
         } else {
           debug('subscription error %d', res.status);
           if (fn) {
@@ -373,14 +373,24 @@ Document.prototype.load = function(url, fn){
 /**
  * Subscribe to a given `sid`.
  *
- * @param {String} subscription id
+ * @param {Response} response
  * @api public
  */
 
-Document.prototype.$subscribe = function(sid){
+Document.prototype.$onresponse = function(res){
+  var sid = res.get('X-MyDB-Id');
+  var mng = this.$manager();
+
   debug('got subscription id "%s"', sid);
+
   this.$_sid = sid;
-  this.$manager().subscribe(sid, this);
+  mng.subscribe(this);
+
+  if (200 == res.status) {
+    this.$onPayload(res.body);
+  } else {
+    this.$onPayload(mng);
+  }
 };
 
 /**
