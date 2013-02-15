@@ -215,7 +215,7 @@ Document.prototype.$onPayload = function(obj){
  * @api private
  */
 
-Document.prototype.onOp = function(sid, data){
+Document.prototype.$onOp = function(sid, data){
   if (sid == this.$sid()) {
     debug('got operation %j', data);
     var log = query(this, data[0], data[1]);
