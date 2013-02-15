@@ -3,10 +3,10 @@
  * Module dependencies.
  */
 
-var Socket = require('engine.io')
-  , Document = require('./document')
-  , debug = require('debug')('mydb-client')
-  , type, json, clone, Emitter;
+var Socket = require('engine.io');
+var Document = require('./document');
+var debug = require('debug')('mydb-client');
+var type, json, clone, Emitter;
 
 try {
   type = require('type');
@@ -49,6 +49,14 @@ function Manager(url, opts){
   this.headers = opts.headers || {};
   this.connected = false;
   this.subscriptions = {};
+
+  if (opts.sid) {
+    debug('connecting with socket id "%s"', opts.sid);
+    if (!~url.indexOf('?')) url += '?';
+    url += '&mydb_id=' + opts.sid;
+    url = url.replace('?&', '?');
+  }
+
   this.open(url);
 }
 
