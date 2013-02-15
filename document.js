@@ -330,7 +330,7 @@ Document.prototype.load = function(url, fn){
 
     // keep track of current url
     self.$_url = url;
-    url = url + (~url.indexOf('?') ? '' : '?') + 'my=1&t=' + Date.now();
+    url = url + (~url.indexOf('?') ? '' : '?') + 'mydb=1&t=' + Date.now();
 
     // get the subscription id over REST
     var xhr = request.get(url);
