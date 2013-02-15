@@ -306,8 +306,7 @@ Document.prototype.load = function(url, fn){
     }
 
     // set up manager event listeners
-    manager.on('op', self.onOp);
-    manager.on('payload', self.onPayload);
+    manager.on('op', self.$onOp);
 
     // mark ready state as loading the doc
     self.$readyState('loading');
