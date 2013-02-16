@@ -390,7 +390,7 @@ Document.prototype.$onresponse = function(res){
     debug('got payload');
     this.$onPayload(res.body);
   } else if (304 == res.status) {
-    this.$onPayload(mng.cache[this.$_url].clone());
+    this.$onPayload(mng.cache[this.$_url].$clone());
   } else {
     throw new Error('Unhandled status %d', res.status);
   }
