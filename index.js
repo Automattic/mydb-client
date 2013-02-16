@@ -222,7 +222,8 @@ Manager.prototype.write = function(obj){
  * @api private
  */
 
-Manager.prototype.unsubscribe = function(id, doc){
+Manager.prototype.unsubscribe = function(doc){
+  var id = doc.$_sid;
   var subs = this.subscriptions[id];
 
   // check that the subscription exists
@@ -235,9 +236,19 @@ Manager.prototype.unsubscribe = function(id, doc){
 
   // if no references are left we unsubscribe from the server
   if (!subs.length) {
+    debug('destroying subscription for "%s"', id);
+
+    // clear cache
+    delete this.cache[doc.$_url];
+
+    // clear subscription
     delete this.subscriptions[id];
+
+    // notify server
     this.write({ e: 'unsubscribe', i: id });
     this.emit('destroy', id);
+  } else {
+    debug('maintaining subscription for "%s" - %d docs left', id, subs.length);
   }
 };
 
