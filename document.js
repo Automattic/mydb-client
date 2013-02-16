@@ -387,9 +387,12 @@ Document.prototype.$onresponse = function(res){
   mng.subscribe(this);
 
   if (200 == res.status) {
+    debug('got payload');
     this.$onPayload(res.body);
+  } else if (304 == res.status) {
+    this.$onPayload(mng.cache[this.$_url].clone());
   } else {
-    this.$onPayload(mng);
+    throw new Error('Unhandled status %d', res.status);
   }
 };
 
