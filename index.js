@@ -49,6 +49,7 @@ function Manager(url, opts){
   this.headers = opts.headers || {};
   this.connected = false;
   this.subscriptions = {};
+  this.cache = {};
 
   if (opts.sid) {
     debug('connecting with socket id "%s"', opts.sid);
