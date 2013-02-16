@@ -55,6 +55,9 @@ function Manager(url, opts){
     if (!~url.indexOf('?')) url += '?';
     url += '&mydb_id=' + opts.sid;
     url = url.replace('?&', '?');
+
+    // assign socket id
+    this.id = opts.sid;
   }
 
   this.open(url);
@@ -135,9 +138,9 @@ Manager.prototype.onMessage = function(msg){
   }
 
   switch (obj.e) {
-    case 'p': // payload
-      this.process(obj.d);
-      this.emit('payload', sid, obj.d);
+    case 'i': // socket id
+      debug('got id "%s"', obj.i);
+      this.id = obj.i;
       break;
 
     case 'o': // operation
