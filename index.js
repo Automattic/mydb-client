@@ -191,25 +191,17 @@ Manager.prototype.process = function(obj){
 /**
  * Subscribes to the given sid.
  *
- * @param {String} id
  * @param {Document} doc
  * @api private
  */
 
-Manager.prototype.subscribe = function(id, doc){
-  // keep count of the number of references to this subscription
-  this.subscriptions[id] = this.subscriptions[id] || [];
-  this.subscriptions[id].push(doc);
-
-  // we subscribe to the server upon the first one
-  if (1 == this.subscriptions[id].length) {
-    this.write({ e: 'subscribe', i: id });
-    this.emit('subscription', doc);
-  } else {
-    var d = this.subscriptions[id][0].ready(function(){
-      doc.onPayload.call(doc, id, clone(d.$payload()));
-    });
+Manager.prototype.subscribe = function(doc){
+  if (!this.cache[doc.$_url]) {
+    this.cache[doc.$_url] = doc;
   }
+
+  this.subscriptions[doc.$_sid] = this.subscriptions[doc.$_sid] || [];
+  this.subscriptions[doc.$_sid].push(doc);
 };
 
 /**
