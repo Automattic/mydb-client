@@ -476,12 +476,30 @@ Document.prototype.cleanup = function(){
   this.$_url = null;
 
   // cleanup existing state
-  if (this.$keys) {
-    for (var i = 0; i < this.$keys.length; i++) {
-      delete this[this.$keys[i]];
-    }
-    this.$keys = [];
+  for (var i in this) {
+    if (!this.hasOwnProperty(i)) continue;
+    if ('$' == i.charAt(0) || '_' == i.charAt(0)) continue;
+    if ('function' == typeof this[i]) continue;
+    delete this[i];
   }
+};
+
+/**
+ * Clones a document.
+ *
+ * @return {Object} cloned doc
+ * @api private
+ */
+
+Document.prototype.$clone = function(){
+  var obj = {};
+  for (var i in this) {
+    if (!this.hasOwnProperty(i)) continue;
+    if ('$' == i.charAt(0) || '_' == i.charAt(0)) continue;
+    if ('function' == typeof this[i]) continue;
+    obj[i] = this[i];
+  }
+  return clone(obj);
 };
 
 /**
