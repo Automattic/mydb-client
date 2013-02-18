@@ -143,6 +143,7 @@ Manager.prototype.onMessage = function(msg){
     case 'i': // socket id
       debug('got id "%s"', obj.i);
       this.id = obj.i;
+      this.emit('id', obj.i);
       break;
 
     case 'o': // operation
