@@ -290,6 +290,7 @@ Document.prototype.load = function(url, fn){
   if (manager.id) {
     load();
   } else {
+    debug('will wait for manager socket id');
     this.connectLoad = load;
     manager.once('id', load);
   }
