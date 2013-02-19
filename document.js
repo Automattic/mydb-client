@@ -260,8 +260,6 @@ Document.prototype.ready = function(fn){
   return this;
 };
 
-
-
 /**
  * Connects to the given url.
  *
