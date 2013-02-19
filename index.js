@@ -55,7 +55,7 @@ function Manager(url, opts){
   if (opts.sid) {
     debug('connecting with socket id "%s"', opts.sid);
     if (!~url.indexOf('?')) url += '?';
-    url += '&mydb_id=' + opts.sid;
+    url += '&mydb_id=' + encodeURIComponent(opts.sid);
     url = url.replace('?&', '?');
 
     // assign socket id
