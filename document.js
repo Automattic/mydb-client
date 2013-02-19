@@ -179,17 +179,6 @@ Document.prototype.hasListeners = function(key, op){
 };
 
 /**
- * Gets the payload
- *
- * @return {Object} payload
- * @api private
- */
-
-Document.prototype.$payload = function(){
-  return this.$_payload;
-};
-
-/**
  * Payloads listener.
  *
  * @param {Object} doc payload
