@@ -260,6 +260,8 @@ Document.prototype.ready = function(fn){
   return this;
 };
 
+
+
 /**
  * Connects to the given url.
  *
@@ -290,9 +292,6 @@ Document.prototype.load = function(url, fn){
     if ('loading' == self.$readyState()) {
       self.destroy();
     }
-
-    // set up manager event listeners
-    manager.on('op', self.$onOp);
 
     // mark ready state as loading the doc
     self.$readyState('loading');
@@ -452,7 +451,7 @@ Document.prototype.each = function(key, fn){
  * @api private
  */
 
-Document.prototype.cleanup = function(){
+Document.prototype.$cleanup = function(){
   debug('cleaning up');
 
   if (this.$xhr) {
@@ -510,7 +509,7 @@ Document.prototype.destroy = function(fn){
   this._callbacks = {};
 
   // clean up
-  this.cleanup();
+  this.$cleanup();
 
   // remove payload / ops event listeners
   var manager = this.$manager();
@@ -538,27 +537,15 @@ Document.prototype.destroy = function(fn){
     // unsubscribe
     var self = this;
     manager.on('unsubscribe', function unsubscribe(s){
-      if (s == self.$_unloading && 'unloading' == self.$readyState()) {
-        self.$readyState('unloaded');
-      }
-      if (s == sid) {
+      if (s == self.$_unloading) {
         debug('unsubscription "%s" complete', s);
         manager.off('unsubscribe', unsubscribe);
+        if ('unloading' == self.$readyState()) {
+          self.$readyState('unloaded');
+        }
         if (fn) fn(null);
       }
     });
-  }
-
-  if (fn) {
-    if (state == 'unloading') {
-      this.once('$state:unloaded', function(){
-        fn(null);
-      });
-    } else if (state == 'unloaded') {
-      setTimeout(function(){
-        fn(null);
-      }, 0);
-    }
   }
 
   return this;
