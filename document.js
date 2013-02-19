@@ -462,7 +462,7 @@ Document.prototype.cleanup = function(){
   if (this.$xhr) {
     if ('undefined' != typeof window) {
       try {
-        debug('abourting xhr');
+        debug('aborting xhr');
         this.$xhr.abort();
       }catch(e){}
     }
