@@ -329,13 +329,16 @@ Document.prototype.load = function(url, fn){
     xhr.end(function(err, res){
       // XXX: remove this check when superagent gets `abort`
       if (xhr == self.$xhr) {
-        if (!res) {
+        if (err instanceof Error) {
+          debug('socket error %s', err.stack);
+          fn(err);
+        } else if (!res) {
           // browser superagent doesn't support err, res
           res = err;
           err = null;
         }
 
-        if (fn && err) return fn(err);
+        if (err) return fn && fn(err);
 
         if (res.ok) {
           if (fn) self.ready(function(){ fn(null); });
