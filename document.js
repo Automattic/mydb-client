@@ -198,51 +198,48 @@ Document.prototype.$onPayload = function(obj){
 /**
  * Operations listener.
  *
- * @param {String} sid
  * @param {Array} operation data `[query, op]`
  * @api private
  */
 
-Document.prototype.$onOp = function(sid, data){
-  if (sid == this.$sid()) {
-    debug('got operation %j', data);
-    var log = query(this, data[0], data[1]);
+Document.prototype.$op = function(data){
+  debug('got operation %j', data);
+  var log = query(this, data[0], data[1]);
 
-    for (var i = 0; i < log.length; i++) {
-      var obj = log[i];
-      var val = obj.value;
-      var key = obj.key;
-      var type = obj.op;
+  for (var i = 0; i < log.length; i++) {
+    var obj = log[i];
+    var val = obj.value;
+    var key = obj.key;
+    var type = obj.op;
 
-      // express $addToSet as a $push
-      if ('$addToSet' == type) {
-        this.emit(key + '$push', val, obj);
-      }
-
-      // express $pop as a $pull
-      if ('$pop' == type) {
-        this.emit(key + '$pull', val, obj);
-      }
-
-      // express $rename as $unset + $set
-      if ('$rename' == type) {
-        this.emit(key + '$unset', null, obj);
-        this.emit(val, this.get(val), obj);
-        this.emit(val + '$set', this.get(val), obj);
-      }
-
-      // express $pushAll/$pullAll/$pull as multiple single ops
-      if ('$pull' == type || /All/.test(type)) {
-        for (var ii = 0; ii < val.length; ii++) {
-          this.emit(key + type.replace(/All/, ''), val[ii], obj);
-        }
-      } else {
-        this.emit(key + type, val, obj);
-      }
-
-      this.emit(key, this.get(key), obj);
-      this.emit('op', obj);
+    // express $addToSet as a $push
+    if ('$addToSet' == type) {
+      this.emit(key + '$push', val, obj);
     }
+
+    // express $pop as a $pull
+    if ('$pop' == type) {
+      this.emit(key + '$pull', val, obj);
+    }
+
+    // express $rename as $unset + $set
+    if ('$rename' == type) {
+      this.emit(key + '$unset', null, obj);
+      this.emit(val, this.get(val), obj);
+      this.emit(val + '$set', this.get(val), obj);
+    }
+
+    // express $pushAll/$pullAll/$pull as multiple single ops
+    if ('$pull' == type || /All/.test(type)) {
+      for (var ii = 0; ii < val.length; ii++) {
+        this.emit(key + type.replace(/All/, ''), val[ii], obj);
+      }
+    } else {
+      this.emit(key + type, val, obj);
+    }
+
+    this.emit(key, this.get(key), obj);
+    this.emit('op', obj);
   }
 };
 
