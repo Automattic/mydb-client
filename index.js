@@ -50,6 +50,7 @@ function Manager(url, opts){
   this.headers = opts.headers || {};
   this.connected = false;
   this.subscriptions = {};
+  this.bufferedOps = {};
   this.cache = {};
 
   if (opts.sid) {
@@ -134,11 +135,6 @@ Manager.prototype.onMessage = function(msg){
   var obj = json.parse(msg);
   var sid = obj.i;
 
-  if (!this.subscriptions[sid] && obj.d) {
-    debug('ignoring data for inexisting subscription %s', sid);
-    return;
-  }
-
   switch (obj.e) {
     case 'i': // socket id
       debug('got id "%s"', obj.i);
@@ -149,7 +145,15 @@ Manager.prototype.onMessage = function(msg){
     case 'o': // operation
       this.process(obj.d[0]);
       this.process(obj.d[1]);
-      this.emit('op', sid, obj.d);
+
+      if (this.subscriptions[sid]) {
+        debug('got operations for subscription "%s"', sid);
+        for (var i = 0, l = this.subscriptions[sid].length; i < l; i++) {
+          this.subscriptions[sid][i].$op(obj.d);
+        }
+      } else {
+        debug('buffering operation for subscription "%s"', sid);
+      }
       break;
 
     case 'u': // unsubscribe confirmation
@@ -199,12 +203,26 @@ Manager.prototype.process = function(obj){
  */
 
 Manager.prototype.subscribe = function(doc){
-  if (!this.cache[doc.$_url]) {
-    this.cache[doc.$_url] = doc;
-  }
+  var sid = doc.$_sid;
+  var url = doc.$_url;
+  debug('subscribing "%s" ("%s")', sid, url);
 
-  this.subscriptions[doc.$_sid] = this.subscriptions[doc.$_sid] || [];
-  this.subscriptions[doc.$_sid].push(doc);
+  // cache url
+  this.cache[url] = doc;
+
+  // track subscription
+  this.subscriptions[sid] = this.subscriptions[sid] || [];
+  this.subscriptions[sid].push(doc);
+
+  // check for buffered ops
+  var buffer = this.bufferedOps[sid];
+  if (buffer) {
+    debug('emitting buffered ops for "%s"', sid);
+    for (var i = 0, l = buffer.length; i < l; i++) {
+      doc.$op(buffer[i]);
+    }
+    delete this.bufferedOps[sid];
+  }
 };
 
 /**
