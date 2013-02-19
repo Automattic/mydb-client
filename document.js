@@ -186,7 +186,7 @@ Document.prototype.hasListeners = function(key, op){
  */
 
 Document.prototype.$onPayload = function(obj){
-  debug('got payload %j', obj);
+  debug('loading payload');
   for (var i in obj) {
     if (obj.hasOwnProperty(i)) {
       this[i] = obj[i];
@@ -377,9 +377,10 @@ Document.prototype.$onresponse = function(res){
   mng.subscribe(this);
 
   if (200 == res.status) {
-    debug('got payload');
+    debug('got payload with response');
     this.$onPayload(res.body);
   } else if (304 == res.status) {
+    debug('got 304 - payload already cached');
     this.$onPayload(mng.cache[this.$_url].$clone());
   } else {
     throw new Error('Unhandled status %d', res.status);
