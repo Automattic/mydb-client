@@ -472,7 +472,7 @@ Document.prototype.$cleanup = function(){
       try {
         debug('aborting xhr');
         this.$xhr.abort();
-      }catch(e){}
+      } catch(e){}
     }
     this.$xhr = null;
   }
