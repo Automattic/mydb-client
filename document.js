@@ -185,14 +185,19 @@ Document.prototype.hasListeners = function(key, op){
  */
 
 Document.prototype.$onPayload = function(obj){
-  debug('loading payload');
+  debug('loading payload %j', obj);
   for (var i in obj) {
     if (obj.hasOwnProperty(i)) {
       this[i] = obj[i];
     }
   }
-  this.$readyState('loaded');
-  this.emit('ready');
+
+  // allow for buffered ops to be applied
+  var self = this;
+  setTimeout(function(){
+    self.$readyState('loaded');
+    self.emit('ready');
+  }, 0);
 };
 
 /**
