@@ -238,16 +238,16 @@ Manager.prototype.write = function(obj){
 /**
  * Destroys a subscription.
  *
+ * @param {Document} doc
  * @param {String} subscription id
  * @api private
  */
 
-Manager.prototype.unsubscribe = function(doc){
-  var id = doc.$_sid;
+Manager.prototype.unsubscribe = function(doc, id){
   var subs = this.subscriptions[id];
 
   // check that the subscription exists
-  if (!subs.length) {
+  if (!subs || !subs.length) {
     throw new Error('Trying to destroy inexisting subscription: ' + id);
   }
 
