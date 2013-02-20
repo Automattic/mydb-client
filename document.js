@@ -482,8 +482,9 @@ Document.prototype.$cleanup = function(){
 
   // cleanup existing state
   for (var i in this) {
+    if ('_callbacks' == i) continue;
+    if ('$' == i.charAt(0)) continue;
     if (!this.hasOwnProperty(i)) continue;
-    if ('$' == i.charAt(0) || '_' == i.charAt(0)) continue;
     if ('function' == typeof this[i]) continue;
     delete this[i];
   }
@@ -499,8 +500,9 @@ Document.prototype.$cleanup = function(){
 Document.prototype.$clone = function(){
   var obj = {};
   for (var i in this) {
+    if ('_callbacks' == i) continue;
+    if ('$' == i.charAt(0)) continue;
     if (!this.hasOwnProperty(i)) continue;
-    if ('$' == i.charAt(0) || '_' == i.charAt(0)) continue;
     if ('function' == typeof this[i]) continue;
     obj[i] = this[i];
   }
