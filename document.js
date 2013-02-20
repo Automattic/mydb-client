@@ -283,7 +283,7 @@ Document.prototype.load = function(url, fn){
     load();
   } else {
     debug('will wait for manager socket id');
-    this.connectLoad = load;
+    this.$connectLoad = load;
     manager.once('id', load);
   }
 
@@ -291,7 +291,7 @@ Document.prototype.load = function(url, fn){
     debug('loading %s with headers %j', url, manager.headers);
 
     // cleanup
-    delete self.connectLoad;
+    delete self.$connectLoad;
 
     // perform cleanup
     if ('loading' == self.$readyState()) {
