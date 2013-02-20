@@ -1,4 +1,54 @@
 
+2.0.0 / 2013-02-19
+==================
+
+  * index: make unsubscribe more reliable
+  * document: handle `unloaded` destroy
+  * document: pass sid along to unsubscribe since it gets cleared
+  * document: renamed `connectLoad`
+  * document: don't clone/clear event listeners
+  * document: re-use payloads from other objects that could be more up-to-date
+  * document: make `connectLoad` not `clone`able
+  * document: instrumentation
+  * document: allow for `manager.subscribe` to emit buffered ops prior to `ready` event
+  * index: added op buffering
+  * document: cleanup
+  * document: rename `onOp` to `op`
+  * document: remove legacy `onOp`
+  * document: typo
+  * document: moar instrumentation
+  * document: improved error handling
+  * index: escape query string component
+  * package: bumped superagent
+  * document: improved instrumentation
+  * document: removed obsolete `$payload` method
+  * packge: bumped `superagent`
+  * document: fix header retrieval
+  * document: added instrumentation
+  * index: emit `id` event
+  * index: support for node/component
+  * index: clear cache upon unsubscribe
+  * index: initialize cache
+  * index: have `subscribe` keep track of documents and maintain a url cache
+  * index: added id handling
+  * document: use new unsubscribe signature
+  * document: fixed `clone` reference
+  * doucment: added `$clone` and improved `$cleanup`
+  * document: improved `onresponse` handler
+  * document: added new `onresponse` method to handle 304s
+  * document: include new mydb headers with request
+  * document: remove old payload subscription
+  * document: wait until the manager has an id instead of just when it connects
+  * document: remove expensive key book keeping
+  * document: prefix internal method with `$`
+  * document: simplify/rename `onPayload`
+  * document: removed legacy payload event
+  * document: added `clone` dependency
+  * document: remove ugly date
+  * document: use `mydb` in url instead of `my`
+  * index: append `mydb_id` to url
+  * document: cautious xhr `abort`
+
 1.3.3 / 2013-02-08
 ==================
 
