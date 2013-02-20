@@ -377,17 +377,25 @@ Document.prototype.$onresponse = function(res){
   debug('got subscription id "%s"', sid);
 
   this.$_sid = sid;
-  mng.subscribe(this);
 
   if (200 == res.status) {
     debug('got payload with response');
-    this.$onPayload(res.body);
+
+    if (mng.subscriptions[sid]) {
+      debug('applying cached payload');
+      this.$onPayload(mng.subscriptions[sid][0].$clone());
+    } else {
+      debug('applying response payload');
+      this.$onPayload(res.body);
+    }
   } else if (304 == res.status) {
     debug('got 304 - payload already cached');
     this.$onPayload(mng.cache[this.$_url].$clone());
   } else {
     throw new Error('Unhandled status %d', res.status);
   }
+
+  mng.subscribe(this);
 };
 
 /**
