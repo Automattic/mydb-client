@@ -531,9 +531,9 @@ Document.prototype.destroy = function(fn){
   manager.off('op', this.$onOp);
 
   // clean up pending `load`
-  if (this.connectLoad) {
-    manager.off('id', this.connectLoad);
-    delete this.connectLoad;
+  if (this.$connectLoad) {
+    manager.off('id', this.$connectLoad);
+    delete this.$connectLoad;
   }
 
   // get current ready state
