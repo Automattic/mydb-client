@@ -371,7 +371,7 @@ Document.prototype.load = function(url, fn){
  */
 
 Document.prototype.$onresponse = function(res){
-  var sid = res.headers['x-mydb-id'];
+  var sid = res.header['x-mydb-id'];
   var mng = this.$manager();
 
   debug('got subscription id "%s"', sid);
