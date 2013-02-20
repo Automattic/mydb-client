@@ -541,7 +541,7 @@ Document.prototype.destroy = function(fn){
 
   // unsubscribe if we have a sid
   if (sid) {
-    manager.unsubscribe(this);
+    manager.unsubscribe(this, sid);
  
     // get sid before cleanup
     this.$_unloading = sid;
