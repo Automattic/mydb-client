@@ -258,8 +258,10 @@ Document.prototype.$op = function(data){
 
 Document.prototype.ready = function(fn){
   if ('loaded' == this.$readyState()) {
+    debug('ready() fired - doc ready');
     setTimeout(fn, 0);
   } else {
+    debug('ready() defered until doc is loaded');
     this.once('ready', fn);
   }
   return this;
