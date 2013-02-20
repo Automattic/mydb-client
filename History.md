@@ -1,4 +1,9 @@
 
+2.0.2 / 2013-02-20
+==================
+
+  * index: fix connection with existing socket id
+
 2.0.1 / 2013-02-20
 ==================
 
