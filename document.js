@@ -561,6 +561,15 @@ Document.prototype.destroy = function(fn){
         if (fn) fn(null);
       }
     });
+  } else {
+    if (state == 'unloaded') {
+      debug('destroying in unloaded state');
+      if (fn) {
+        setTimeout(function(){
+          fn(null);
+        }, 0);
+      }
+    }
   }
 
   return this;
