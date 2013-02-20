@@ -54,11 +54,6 @@ function Manager(url, opts){
   this.cache = {};
 
   if (opts.sid) {
-    debug('connecting with socket id "%s"', opts.sid);
-    if (!~url.indexOf('?')) url += '?';
-    url += '&mydb_id=' + encodeURIComponent(opts.sid);
-    url = url.replace('?&', '?');
-
     // assign socket id
     this.id = opts.sid;
   }
@@ -94,7 +89,13 @@ Manager.prototype.reconnect = function(url){
     this.onClose();
   }
 
-  this.socket = new Socket(url);
+  var opts = {};
+  if (this.id) {
+    debug('connecting with existing mydb_id %s', this.id);
+    opts.query = { mydb_id: this.id };
+  }
+
+  this.socket = new Socket(url, opts);
   this.socket.onopen = this.onOpen.bind(this);
   this.socket.onclose = this.onClose.bind(this);
   this.socket.onmessage = this.onMessage.bind(this);
@@ -121,6 +122,7 @@ Manager.prototype.onOpen = function(){
 
 Manager.prototype.onClose = function(){
   debug('mydb-client socket closed');
+  delete this.id;
   this.connected = false;
   this.emit('disconnect');
 };
