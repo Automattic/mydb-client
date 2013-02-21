@@ -52,6 +52,7 @@ function Manager(url, opts){
   this.subscriptions = {};
   this.bufferedOps = {};
   this.cache = {};
+  this.preloaded = {};
 
   if (opts.sid) {
     // assign socket id
@@ -272,6 +273,30 @@ Manager.prototype.unsubscribe = function(doc, id){
   } else {
     debug('maintaining subscription for "%s" - %d docs left', id, subs.length);
   }
+};
+
+/**
+ * Preloads a document.
+ *
+ * Options:
+ *  - {String} url
+ *  - {String} subscription id
+ *  - {Object} document
+ *
+ * @param {Object} options
+ * @api public
+ */
+
+Manager.prototype.preload = function(opts){
+  var doc = new Document(this);
+  doc.$_url = opts.url;
+  doc.$_sid = opts.sid;
+  doc.$onPayload(opts.doc);
+  doc.$readyState('loaded');
+  this.subscribe(doc);
+
+  debug('preloaded %s (%s): %j', opts.url, opts.sid, opts.doc);
+  this.preloaded[opts.url] = doc;
 };
 
 /**
