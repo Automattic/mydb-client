@@ -1,4 +1,10 @@
 
+2.0.6 / 2013-02-21
+==================
+
+  * index: added preloading support to `.get`
+  * index: added `Manager#preload`
+
 2.0.5 / 2013-02-20
 ==================
 
