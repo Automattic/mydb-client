@@ -307,7 +307,20 @@ Manager.prototype.preload = function(opts){
  */
 
 Manager.prototype.get = function(url, fn){
-  var doc = new Document(this);
-  if (url) doc.load(url, fn);
+  var doc;
+  if (this.preloaded[url]) {
+    debug('using preloaded document for url %s', url);
+    doc = this.preloaded[url];
+
+    // clear preload cache
+    delete this.preloaded[url];
+
+    // simulate a `load` callback
+    if (fn) setTimeout(function(){ fn(null); }, 0);
+  } else {
+    debug('creating new document for url %s', url);
+    doc = new Document(this);
+    if (url) doc.load(url, fn);
+  }
   return doc;
 };
