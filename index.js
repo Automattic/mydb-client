@@ -318,9 +318,13 @@ Manager.prototype.get = function(url, fn){
     // simulate a `load` callback
     if (fn) setTimeout(function(){ fn(null); }, 0);
   } else {
-    debug('creating new document for url %s', url);
     doc = new Document(this);
-    if (url) doc.load(url, fn);
+    if (url) {
+      debug('creating new document for url %s', url);
+      doc.load(url, fn);
+    } else {
+      debug('creating new vanilla document');
+    }
   }
   return doc;
 };
