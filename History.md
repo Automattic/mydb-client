@@ -1,4 +1,9 @@
 
+2.1.1 / 2013-02-21
+==================
+
+  * *: refactor preloading to work with vanilla documents
+
 2.1.0 / 2013-02-21
 ==================
 
