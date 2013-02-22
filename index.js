@@ -288,15 +288,8 @@ Manager.prototype.unsubscribe = function(doc, id){
  */
 
 Manager.prototype.preload = function(opts){
-  var doc = new Document(this);
-  doc.$_url = opts.url;
-  doc.$_sid = opts.sid;
-  doc.$onPayload(opts.doc);
-  doc.$readyState('loaded');
-  this.subscribe(doc);
-
   debug('preloaded %s (%s): %j', opts.url, opts.sid, opts.doc);
-  this.preloaded[opts.url] = doc;
+  this.preloaded[opts.url] = opts;
 };
 
 /**
@@ -307,24 +300,12 @@ Manager.prototype.preload = function(opts){
  */
 
 Manager.prototype.get = function(url, fn){
-  var doc;
-  if (this.preloaded[url]) {
-    debug('using preloaded document for url %s', url);
-    doc = this.preloaded[url];
-
-    // clear preload cache
-    delete this.preloaded[url];
-
-    // simulate a `load` callback
-    if (fn) setTimeout(function(){ fn(null); }, 0);
+  var doc = new Document(this);
+  if (url) {
+    debug('creating new document for url %s', url);
+    doc.load(url, fn);
   } else {
-    doc = new Document(this);
-    if (url) {
-      debug('creating new document for url %s', url);
-      doc.load(url, fn);
-    } else {
-      debug('creating new vanilla document');
-    }
+    debug('creating new vanilla document');
   }
   return doc;
 };

@@ -288,8 +288,6 @@ Document.prototype.load = function(url, fn){
   }
 
   function load(){
-    debug('loading %s with headers %j', url, manager.headers);
-
     // cleanup
     delete self.$connectLoad;
 
@@ -300,6 +298,22 @@ Document.prototype.load = function(url, fn){
 
     // mark ready state as loading the doc
     self.$readyState('loading');
+
+    // decide whether to make a request
+    var preloaded = manager.preloaded[url];
+    if (preloaded) {
+      debug('using preloaded document for url %s', url);
+      self.$_url = url;
+      self.$_sid = preloaded.sid;
+      self.$onPayload(preloaded.doc);
+      self.$readyState('loaded');
+      manager.subscribe(self);
+      delete manager.preloaded[url];
+      if (fn) setTimeout(function(){ fn(null); }, 10);
+      return;
+    } else {
+      debug('loading %s with headers %j', url, manager.headers);
+    }
 
     // if in node, try to prefix the url if relative
     if ('undefined' != typeof process && '/' == url[0]) {
