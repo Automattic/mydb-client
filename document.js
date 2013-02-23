@@ -449,7 +449,9 @@ Document.prototype.get = function(key, fn){
  */
 
 Document.prototype.upon = function(key, fn){
-  this.get(key, fn);
+  this.get(key, function(v){
+    fn(v, true);
+  });
   this.on(key, fn);
   return this;
 };
