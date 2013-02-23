@@ -1,4 +1,9 @@
 
+2.2.0 / 2013-02-23
+==================
+
+  * document: added back upon second `isInitial` bool
+
 2.1.1 / 2013-02-21
 ==================
 
