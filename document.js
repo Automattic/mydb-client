@@ -452,7 +452,9 @@ Document.prototype.upon = function(key, fn){
   this.get(key, function(v){
     fn(v, true);
   });
-  this.on(key, fn);
+  this.on(key, function(v){
+    fn(v, false);
+  });
   return this;
 };
 
