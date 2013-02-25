@@ -152,7 +152,13 @@ Manager.prototype.onMessage = function(msg){
       if (this.subscriptions[sid]) {
         debug('got operations for subscription "%s"', sid);
         for (var i = 0, l = this.subscriptions[sid].length; i < l; i++) {
-          this.subscriptions[sid][i].$op(obj.d);
+          // next tick to make sure the op handler doesn't alter
+          // the subscriptions array
+          (function(sub){
+            setTimeout(function(){
+              sub.$op(obj.d);
+            }, 0);
+          })(this.subscriptions[sid][i]);
         }
       } else {
         debug('buffering operation for subscription "%s"', sid);
