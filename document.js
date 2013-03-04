@@ -345,7 +345,7 @@ Document.prototype.load = function(url, fn){
       if (xhr == self.$xhr) {
         if (err instanceof Error) {
           debug('socket error %s', err.stack);
-          fn(err);
+          return fn && fn(err);
         } else if (!res) {
           // browser superagent doesn't support err, res
           res = err;
@@ -363,7 +363,7 @@ Document.prototype.load = function(url, fn){
             var err = new Error('Subscription error');
             err.url = url;
             err.status = res.status;
-            fn(err);
+            fn && fn(err);
           }
         }
       } else {
