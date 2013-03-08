@@ -309,7 +309,7 @@ Document.prototype.load = function(url, fn){
       self.$readyState('loaded');
       manager.subscribe(self);
       delete manager.preloaded[url];
-      if (fn) setTimeout(function(){ fn(null); }, 10);
+      if (fn) setTimeout(function(){ fn(null); }, 0);
       return;
     } else {
       debug('loading %s with headers %j', url, manager.headers);
