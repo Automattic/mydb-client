@@ -1,4 +1,9 @@
 
+2.2.6 / 2013-03-08
+==================
+
+  * document: emit root-level mutation events [TooTallNate]
+
 2.2.5 / 2013-03-08
 ==================
 
