@@ -243,7 +243,10 @@ Document.prototype.$op = function(data){
       this.emit(key + type, val, obj);
     }
 
-    this.emit(key, this.get(key), obj);
+    var keys = key.split('.');
+    for (var ii = 0; ii < keys.length; ii++) {
+      this.emit(keys[ii], this.get(keys[ii]), obj);
+    }
     this.emit('op', obj);
   }
 };
