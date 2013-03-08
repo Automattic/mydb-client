@@ -212,6 +212,7 @@ Document.prototype.$op = function(data){
   var log = query(this, data[0], data[1]);
 
   for (var i = 0; i < log.length; i++) {
+    var ii;
     var obj = log[i];
     var val = obj.value;
     var key = obj.key;
@@ -236,7 +237,7 @@ Document.prototype.$op = function(data){
 
     // express $pushAll/$pullAll/$pull as multiple single ops
     if ('$pull' == type || /All/.test(type)) {
-      for (var ii = 0; ii < val.length; ii++) {
+      for (ii = 0; ii < val.length; ii++) {
         this.emit(key + type.replace(/All/, ''), val[ii], obj);
       }
     } else {
@@ -244,8 +245,9 @@ Document.prototype.$op = function(data){
     }
 
     var keys = key.split('.');
-    for (var ii = 0; ii < keys.length; ii++) {
-      this.emit(keys[ii], this.get(keys[ii]), obj);
+    for (ii = 0; ii < keys.length; ii++) {
+      key = keys.slice(0, ii + 1).join('.');
+      this.emit(key, this.get(key), obj);
     }
     this.emit('op', obj);
   }
