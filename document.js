@@ -209,7 +209,7 @@ Document.prototype.$onPayload = function(obj){
 
 Document.prototype.$op = function(data){
   debug('got operation %j', data);
-  var log = query(this, data[0], data[1]);
+  var log = query(this, data[0], data[1], { strict: true });
 
   for (var i = 0; i < log.length; i++) {
     var ii;
