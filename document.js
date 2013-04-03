@@ -262,12 +262,20 @@ Document.prototype.$op = function(data){
  */
 
 Document.prototype.ready = function(fn){
+  // make sure we dont fire `fn` if one of the `ready`
+  // handlers triggered an `unloading` state by wrapping
+  // each callback
+  var self = this;
+  function done(){
+    if ('loaded' == self.$readyState()) fn();
+  }
+
   if ('loaded' == this.$readyState()) {
     debug('ready() fired - doc ready');
-    setTimeout(fn, 0);
+    setTimeout(done, 0);
   } else {
     debug('ready() defered until doc is loaded');
-    this.once('ready', fn);
+    this.once('ready', done);
   }
   return this;
 };
