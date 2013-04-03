@@ -1,4 +1,9 @@
 
+3.0.2 / 2013-04-02
+==================
+
+  * document: make sure `ready` handler that `unloads` stops other `ready` callbacks
+
 3.0.1 / 2013-04-02
 ==================
 
