@@ -1,4 +1,9 @@
 
+3.1.0 / 2013-04-15
+==================
+
+  * document: `destroy` works in absence of connection
+
 3.0.4 / 2013-04-15
 ==================
 
