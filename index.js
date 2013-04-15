@@ -122,10 +122,13 @@ Manager.prototype.onOpen = function(){
  */
 
 Manager.prototype.onClose = function(){
-  debug('mydb-client socket closed');
-  delete this.id;
-  this.connected = false;
-  this.emit('disconnect');
+  // bug: https://github.com/LearnBoost/engine.io/issues/168
+  if (this.connected) {
+    debug('mydb-client socket closed');
+    delete this.id;
+    this.connected = false;
+    this.emit('disconnect');
+  }
 };
 
 /**
