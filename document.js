@@ -570,6 +570,13 @@ Document.prototype.destroy = function(fn){
   // get current ready state
   var state = this.$readyState();
 
+  function onunsubscribe(){
+    if ('unloading' == self.$readyState()) {
+      self.$readyState('unloaded');
+    }
+    if (fn) fn(null);
+  }
+
   // unsubscribe if we have a sid
   if (sid) {
     manager.unsubscribe(this, sid);
@@ -582,16 +589,17 @@ Document.prototype.destroy = function(fn){
 
     // unsubscribe
     var self = this;
-    manager.on('unsubscribe', function unsubscribe(s){
-      if (s == self.$_unloading) {
-        debug('unsubscription "%s" complete', s);
-        manager.off('unsubscribe', unsubscribe);
-        if ('unloading' == self.$readyState()) {
-          self.$readyState('unloaded');
+    if (manager.connected) {
+      manager.on('unsubscribe', function unsubscribe(s){
+        if (s == self.$_unloading) {
+          debug('unsubscription "%s" complete', s);
+          manager.off('unsubscribe', unsubscribe);
+          onunsubscribe();
         }
-        if (fn) fn(null);
-      }
-    });
+      });
+    } else {
+      setTimeout(onunsubscribe, 0);
+    }
   } else {
     if (state == 'unloaded') {
       debug('destroying in unloaded state');
