@@ -1,4 +1,9 @@
 
+3.2.0 / 2013-04-17
+==================
+
+  * document: `strict` false no longer needed with `findAndModify`
+
 3.1.0 / 2013-04-15
 ==================
 
