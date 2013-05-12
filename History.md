@@ -1,4 +1,9 @@
 
+3.2.1 / 2013-05-11
+==================
+
+  * index: added instances introspection ability
+
 3.2.0 / 2013-04-17
 ==================
 
