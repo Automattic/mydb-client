@@ -28,6 +28,18 @@ try {
 module.exports = Manager;
 
 /**
+ * Make `Manager` an emitter itself.
+ */
+
+Emitter(Manager);
+
+/**
+ * Expose instances.
+ */
+
+Manager.instances = [];
+
+/**
  * Noop.
  */
 
@@ -46,6 +58,7 @@ function noop(){}
 
 function Manager(url, opts){
   if (!(this instanceof Manager)) return new Manager(url, opts);
+
   opts = opts || {};
   this.headers = opts.headers || {};
   this.connected = false;
@@ -60,6 +73,10 @@ function Manager(url, opts){
   }
 
   this.open(url);
+
+  // keep track of the instance
+  Manager.instances.push(this);
+  Manager.emit('instance', this);
 }
 
 /**
