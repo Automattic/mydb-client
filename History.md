@@ -1,4 +1,9 @@
 
+3.2.2 / 2013-05-28
+==================
+
+  * document: fixed uncaught exception caused by debug [tootallnate]
+
 3.2.1 / 2013-05-11
 ==================
 

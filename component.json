@@ -1,6 +1,6 @@
 {
   "name": "mydb",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "mydb client component",
   "keywords": ["realtime", "db"],
   "scripts": ["index.js", "document.js"],
