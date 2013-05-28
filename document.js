@@ -380,7 +380,8 @@ Document.prototype.load = function(url, fn){
           }
         }
       } else {
-        debug('ignoring outdated resource subscription %s', res.text);
+        debug('ignoring outdated resource subscription %s',
+          res ? res.text : (err ? err.stack : ''));
       }
     });
 
