@@ -100,6 +100,7 @@ Manager.prototype.reconnect = function(url){
     this.socket.onopen = noop;
     this.socket.onclose = noop;
     this.socket.onmessage = noop;
+    this.socket.onerror = noop;
     this.socket.close();
   }
 
@@ -117,6 +118,7 @@ Manager.prototype.reconnect = function(url){
   this.socket.onopen = this.onOpen.bind(this);
   this.socket.onclose = this.onClose.bind(this);
   this.socket.onmessage = this.onMessage.bind(this);
+  this.socket.onerror = this.onError.bind(this);
   this.url = url;
 };
 
@@ -129,6 +131,7 @@ Manager.prototype.reconnect = function(url){
 Manager.prototype.onOpen = function(){
   debug('mydb-client socket open');
   this.connected = true;
+  this.socket.onerror = noop;
   this.emit('connect');
 };
 
@@ -189,6 +192,19 @@ Manager.prototype.onMessage = function(msg){
       this.emit('unsubscribe', sid);
       break;
   }
+};
+
+/**
+ * Handles socket errors.
+ *
+ * @api private
+ */
+
+Manager.prototype.onError = function(err){
+  debug('connect error');
+  this.socket.onopen = noop;
+  this.socket.onerror = noop;
+  this.emit('connect_error', err);
 };
 
 /**
