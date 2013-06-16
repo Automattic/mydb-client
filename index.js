@@ -142,13 +142,14 @@ Manager.prototype.onOpen = function(){
  */
 
 Manager.prototype.onClose = function(){
-  // bug: https://github.com/LearnBoost/engine.io/issues/168
-  if (this.connected) {
-    debug('mydb-client socket closed');
-    this.id = null;
-    this.connected = false;
-    this.emit('disconnect');
-  }
+  debug('mydb-client socket closed');
+  this.id = null;
+  this.subscriptions = {};
+  this.bufferedOps = {};
+  this.cache = {};
+  this.preloaded = {};
+  this.connected = false;
+  this.emit('disconnect');
 };
 
 /**
