@@ -1,4 +1,9 @@
 
+3.2.6 / 2013-06-16
+==================
+
+  * index: improved onClose for reopening connection
+
 3.2.5 / 2013-06-15
 ==================
 
