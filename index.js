@@ -294,7 +294,8 @@ Manager.prototype.unsubscribe = function(doc, id){
 
   // check that the subscription exists
   if (!subs || !subs.length) {
-    throw new Error('Trying to destroy inexisting subscription: ' + id);
+    debug('ignore destroy of inexisting subscription "%s"', id);
+    return;
   }
 
   // we substract from the reference count
