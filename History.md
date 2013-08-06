@@ -1,4 +1,9 @@
 
+3.2.7 / 2013-08-06
+==================
+
+  * index: ignore destroying inexisting subscriptions
+
 3.2.6 / 2013-06-16
 ==================
 
