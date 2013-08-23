@@ -341,6 +341,9 @@ Document.prototype.load = function(url, fn){
 
     // get the subscription id over REST
     var xhr = request.get(url);
+    if ('function' == typeof xhr.agent) {
+      xhr.agent(this.agent);
+    }
     xhr.set(manager.headers);
 
     // include socket id

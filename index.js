@@ -60,6 +60,7 @@ function Manager(url, opts){
   if (!(this instanceof Manager)) return new Manager(url, opts);
 
   opts = opts || {};
+  this.agent = opts.agent || false;
   this.headers = opts.headers || {};
   this.connected = false;
   this.subscriptions = {};
@@ -108,7 +109,9 @@ Manager.prototype.reconnect = function(url){
     this.onClose();
   }
 
-  var opts = {};
+  var opts = {
+    agent: this.agent
+  };
   if (this.id) {
     debug('connecting with existing mydb_id %s', this.id);
     opts.query = { mydb_id: this.id };
