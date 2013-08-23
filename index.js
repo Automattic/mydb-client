@@ -162,6 +162,14 @@ Manager.prototype.onMessage = function(msg){
   var obj = json.parse(msg);
   var sid = obj.i;
 
+  function doOp(sub){
+    // next tick to make sure the op handler doesn't alter
+    // the subscriptions array
+    setTimeout(function(){
+      sub.$op(obj.d);
+    }, 0);
+  }
+
   switch (obj.e) {
     case 'i': // socket id
       debug('got id "%s"', obj.i);
@@ -176,13 +184,7 @@ Manager.prototype.onMessage = function(msg){
       if (this.subscriptions[sid]) {
         debug('got operations for subscription "%s"', sid);
         for (var i = 0, l = this.subscriptions[sid].length; i < l; i++) {
-          // next tick to make sure the op handler doesn't alter
-          // the subscriptions array
-          (function(sub){
-            setTimeout(function(){
-              sub.$op(obj.d);
-            }, 0);
-          })(this.subscriptions[sid][i]);
+          doOp(this.subscriptions[sid][i]);
         }
       } else {
         debug('buffering operation for subscription "%s"', sid);
