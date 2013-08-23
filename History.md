@@ -1,4 +1,10 @@
 
+3.4.0 / 2013-08-23
+==================
+
+ * accept an `agent` option
+ * package: update "superagent" to v0.15.4
+
 3.3.0 / 2013-08-23
 ==================
 
