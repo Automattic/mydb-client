@@ -373,10 +373,10 @@ Document.prototype.load = function(url, fn){
         } else {
           debug('subscription error %d', res.status);
           if (fn) {
-            var err = new Error('Subscription error: ' + res.status);
+            err = new Error('Subscription error: ' + res.status);
             err.url = url;
             err.status = res.status;
-            fn && fn(err);
+            fn(err);
           }
         }
       } else {
