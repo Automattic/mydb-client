@@ -1,4 +1,9 @@
 
+3.4.3 / 2013-08-25
+==================
+
+ * package: bump `engine.io-client` to fix regression
+
 3.4.2 / 2013-08-23
 ==================
 
