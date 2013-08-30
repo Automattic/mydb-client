@@ -1,11 +1,11 @@
 {
   "name": "mydb",
-  "version": "3.4.3",
+  "version": "3.4.4",
   "description": "mydb client component",
   "keywords": ["realtime", "db"],
   "scripts": ["index.js", "document.js"],
   "dependencies": {
-    "learnboost/engine.io-client": "0.3.0",
+    "learnboost/engine.io-client": "0.7.5",
     "learnboost/mongo-query": "0.1.0",
     "learnboost/dot": "0.1.0",
     "component/emitter": "*",
