@@ -5,7 +5,7 @@
   "keywords": ["realtime", "db"],
   "scripts": ["index.js", "document.js"],
   "dependencies": {
-    "learnboost/engine.io-client": "0.7.5",
+    "learnboost/engine.io-client": "0.7.9",
     "learnboost/mongo-query": "0.1.0",
     "learnboost/dot": "0.1.0",
     "component/emitter": "*",
