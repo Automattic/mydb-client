@@ -12,7 +12,7 @@
     "component/type": "*",
     "component/clone": "*",
     "component/json": "*",
-    "visionmedia/superagent": "0.9.5",
+    "visionmedia/superagent": "0.15.1",
     "visionmedia/debug": "*"
   }
 }
