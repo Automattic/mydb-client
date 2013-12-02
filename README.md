@@ -1,4 +1,3 @@
-
 # mydb-client
 
   MyDB client component.
@@ -104,3 +103,7 @@ mydb.get('/woot/woot');
 
   Destroys this subscription. `fn` gets called when the unsubscription
   for the current id is confirmed.
+
+## License
+
+MIT
