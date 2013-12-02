@@ -5,7 +5,7 @@
 ## Installation
 
 ```
-$ component install LearnBoost/mydb-client
+$ component install cloudup/mydb-client
 ```
 
 ## Example
