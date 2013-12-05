@@ -6,8 +6,8 @@
   "scripts": ["index.js", "document.js"],
   "dependencies": {
     "learnboost/engine.io-client": "0.7.10",
-    "learnboost/mongo-query": "0.4.2",
-    "learnboost/dot": "0.1.0",
+    "cloudup/mongo-query": "0.4.2",
+    "cloudup/dot": "0.1.0",
     "component/emitter": "*",
     "component/type": "*",
     "component/clone": "*",
