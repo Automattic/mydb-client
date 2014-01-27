@@ -3,23 +3,13 @@
  * Module dependencies.
  */
 
-var Document = require('./document');
 var debug = require('debug')('mydb-client');
-var type, json, clone, Socket, Emitter;
-
-try {
-  type = require('type');
-  json = require('json');
-  clone = require('clone');
-  Socket = require('engine.io');
-  Emitter = require('emitter');
-} catch(e) {
-  type = require('type-component');
-  json = require('json-component');
-  clone = require('clone-component');
-  Socket = require('engine.io-client');
-  Emitter = require('emitter-component');
-}
+var type = require('type-component');
+var json = require('json-component');
+var clone = require('clone-component');
+var Socket = require('engine.io-client');
+var Emitter = require('emitter-component');
+var Document = require('./document');
 
 /**
  * Module exports.
