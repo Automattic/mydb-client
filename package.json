@@ -4,11 +4,11 @@
   "dependencies": {
     "engine.io-client": "0.7.10",
     "superagent": "0.15.4",
-    "dot": "http://registry.npmjs.org/dot-component/-/dot-component-0.1.0.tgz",
-    "type": "http://registry.npmjs.org/type-component/-/type-component-0.0.1.tgz",
-    "json": "http://registry.npmjs.org/json-component/-/json-component-0.0.1.tgz",
-    "emitter": "http://registry.npmjs.org/emitter-component/-/emitter-component-1.1.1.tgz",
-    "clone": "http://registry.npmjs.org/clone-component/-/clone-component-0.1.0.tgz",
+    "dot-component": "0.1.0",
+    "type-component": "0.0.1",
+    "json3": "3.3.0",
+    "emitter-component": "1.1.1",
+    "clone-component": "0.1.0",
     "mongo-query": "0.4.2",
     "debug": "*"
   },
