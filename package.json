@@ -8,7 +8,7 @@
     "type-component": "0.0.1",
     "json3": "3.3.0",
     "emitter-component": "1.1.1",
-    "clone-component": "0.1.0",
+    "clone-component": "0.2.0",
     "mongo-query": "0.4.2",
     "debug": "*"
   },
