@@ -17,5 +17,8 @@
       "mydb/index.js": "index.js",
       "mydb/document.js": "document.js"
     }
+  },
+  "devDependencies": {
+    "browserify": "2.35.1"
   }
 }
