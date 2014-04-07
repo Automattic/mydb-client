@@ -265,7 +265,7 @@ Document.prototype.ready = function(fn){
     debug('ready() fired - doc ready');
     setTimeout(done, 0);
   } else {
-    debug('ready() defered until doc is loaded');
+    debug('ready() deferred until doc is loaded');
     this.once('ready', done);
   }
   return this;
