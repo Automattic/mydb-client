@@ -9,7 +9,7 @@
     "json3": "3.3.0",
     "emitter-component": "1.1.1",
     "clone-component": "0.2.0",
-    "mongo-query": "0.5.2",
+    "mongo-query": "cloudup/mongo-query#0.5.5"
     "debug": "*"
   },
   "component": {
