@@ -10,6 +10,17 @@ var clone = require('clone-component');
 var Socket = require('engine.io-client');
 var Emitter = require('emitter-component');
 var Document = require('./document');
+var type, clone, Emitter;
+
+try {
+  type = require('type-component');
+  clone = require('clone-component');
+  Emitter = require('emitter-component');
+} catch (e) {
+  type = require('type');
+  clone = require('clone');
+  Emitter = require('emitter');
+}
 
 /**
  * Module exports.

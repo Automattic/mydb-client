@@ -12,6 +12,12 @@
     "mongo-query": "cloudup/mongo-query#0.5.5",
     "debug": "*"
   },
+  "browser": {
+    "dot": "dot-component",
+    "clone": "clone-component",
+    "type": "type-component",
+    "emitter": "emitter-component"
+  },
   "component": {
     "scripts": {
       "mydb/index.js": "index.js",
