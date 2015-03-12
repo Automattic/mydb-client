@@ -3,23 +3,13 @@
  * Module dependencies.
  */
 
-var request = require('superagent');
 var query = require('mongo-query');
+var request = require('superagent');
+var dot = require('dot-component');
+var type = require('component-type');
+var clone = require('component-clone');
+var Emitter = require('component-emitter');
 var debug = require('debug')('mydb-client:document');
-var dot, type, clone, Emitter;
-
-try {
-  dot = require('dot-component');
-  type = require('type-component');
-  clone = require('clone-component');
-  Emitter = require('emitter-component');
-} catch (e) {
-  dot = require('dot');
-  type = require('type');
-  clone = require('clone');
-  Emitter = require('emitter');
-}
-
 
 /**
  * Module exports.

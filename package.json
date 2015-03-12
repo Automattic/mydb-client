@@ -2,26 +2,14 @@
   "name": "mydb-client",
   "version": "3.5.6",
   "dependencies": {
-    "engine.io-client": "0.7.10",
-    "superagent": "0.15.4",
+    "component-clone": "0.2.2",
+    "component-emitter": "1.2.0",
+    "component-type": "1.1.0",
+    "debug": "*",
     "dot-component": "0.1.1",
-    "type-component": "0.0.1",
-    "json3": "3.3.0",
-    "emitter-component": "1.1.1",
-    "clone-component": "0.2.0",
-    "mongo-query": "cloudup/mongo-query#0.5.5",
-    "debug": "*"
-  },
-  "browser": {
-    "dot": "dot-component",
-    "clone": "clone-component",
-    "type": "type-component",
-    "emitter": "emitter-component"
-  },
-  "component": {
-    "scripts": {
-      "mydb/index.js": "index.js",
-      "mydb/document.js": "document.js"
-    }
+    "engine.io-client": "0.7.10",
+    "json3": "3.3.2",
+    "mongo-query": "0.5.7",
+    "superagent": "0.15.4"
   }
 }
