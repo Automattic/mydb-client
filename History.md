@@ -2,90 +2,90 @@
 3.5.6 / 2014-01-27
 ==================
 
- * package: bump mongo-query
+  * package: bump mongo-query
 
 3.5.5 / 2014-01-27
 ==================
 
- * package: bump dot
+  * package: bump dot
 
 3.5.4 / 2014-01-27
 ==================
 
- * package: bump `mongo-query`
+  * package: bump `mongo-query`
 
 3.5.3 / 2014-01-27
 ==================
 
- * package: bump `mongo-query`
- * package: bump version
+  * package: bump `mongo-query`
+  * package: bump version
 
 3.5.2 / 2014-01-27
 ==================
 
- * package: fix clone dep
+  * package: fix clone dep
 
 3.5.1 / 2014-01-27
 ==================
 
- * fix dep madness
- * package: bump version
+  * fix dep madness
+  * package: bump version
 
 3.5.0 / 2014-01-26
 ==================
 
- * remove try/catch requires
+  * remove try/catch requires
 
 3.4.8 / 2013-10-28
 ==================
 
- * package: bump `engine.io-client`
+  * package: bump `engine.io-client`
 
 3.4.7 / 2013-08-30
 ==================
 
- * package: bump `engine.io-client`
+  * package: bump `engine.io-client`
 
 3.4.6 / 2013-08-30
 ==================
 
- * package: bump `engine.io-client`
+  * package: bump `engine.io-client`
 
 3.4.5 / 2013-08-30
 ==================
 
- * package: bump `engine.io-client`
+  * package: bump `engine.io-client`
 
 3.4.4 / 2013-08-30
 ==================
 
- * package: bump `engine.io-client`
+  * package: bump `engine.io-client`
 
 3.4.3 / 2013-08-25
 ==================
 
- * package: bump `engine.io-client` to fix regression
+  * package: bump `engine.io-client` to fix regression
 
 3.4.2 / 2013-08-23
 ==================
 
- * package: bump `engine.io-client`
+  * package: bump `engine.io-client`
 
 3.4.1 / 2013-08-23
 ==================
 
- * package: engine.io-client bump
+  * package: engine.io-client bump
 
 3.4.0 / 2013-08-23
 ==================
 
- * accept an `agent` option
- * package: update "superagent" to v0.15.4
+  * accept an `agent` option
+  * package: update "superagent" to v0.15.4
 
 3.3.0 / 2013-08-23
 ==================
 
- * package: bump `engine.io-client` for `agent` support
+  * package: bump `engine.io-client` for `agent` support
 
 3.2.7 / 2013-08-06
 ==================
