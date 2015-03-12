@@ -1,6 +1,6 @@
 {
   "name": "mydb-client",
-  "version": "3.5.6",
+  "version": "3.6.0",
   "dependencies": {
     "component-clone": "0.2.2",
     "component-emitter": "1.2.0",

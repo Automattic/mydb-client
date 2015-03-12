@@ -1,4 +1,12 @@
 
+3.6.0 / 2015-03-12
+==================
+
+  * remove component, remove try/catch dance
+  * package: update "mongo-query" to v0.5.5
+  * document: fix typo in `debug()` call
+  * remove duplicate manifest
+
 3.5.6 / 2014-01-27
 ==================
 
