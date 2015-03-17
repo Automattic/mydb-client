@@ -30,12 +30,6 @@ Emitter(Manager);
 Manager.instances = [];
 
 /**
- * Noop.
- */
-
-function noop(){}
-
-/**
  * Manager constructor.
  *
  * Options:
@@ -68,6 +62,12 @@ function Manager(url, opts){
   // keep track of the instance
   Manager.instances.push(this);
   Manager.emit('instance', this);
+
+  // bind callback functions to `this`
+  this.onOpen = this.onOpen.bind(this);
+  this.onClose = this.onClose.bind(this);
+  this.onMessage = this.onMessage.bind(this);
+  this.onError = this.onError.bind(this);
 }
 
 /**
@@ -88,10 +88,10 @@ Manager.prototype.reconnect = function(url){
   if (!url && this.url) url = this.url;
 
   if (this.socket) {
-    this.socket.onopen = noop;
-    this.socket.onclose = noop;
-    this.socket.onmessage = noop;
-    this.socket.onerror = noop;
+    this.socket.off('open' this.onOpen);
+    this.socket.off('close', this.onClose);
+    this.socket.off('message', this.onMessage);
+    this.socket.off('error', this.onError);
     this.socket.close();
   }
 
@@ -108,10 +108,10 @@ Manager.prototype.reconnect = function(url){
   }
 
   this.socket = new Socket(url, opts);
-  this.socket.onopen = this.onOpen.bind(this);
-  this.socket.onclose = this.onClose.bind(this);
-  this.socket.onmessage = this.onMessage.bind(this);
-  this.socket.onerror = this.onError.bind(this);
+  this.socket.on('open', this.onOpen);
+  this.socket.on('close', this.onClose);
+  this.socket.on('message', this.onMessage);
+  this.socket.on('error', this.onError);
   this.url = url;
 };
 
@@ -124,7 +124,7 @@ Manager.prototype.reconnect = function(url){
 Manager.prototype.onOpen = function(){
   debug('mydb-client socket open');
   this.connected = true;
-  this.socket.onerror = noop;
+  this.socket.off('error', this.onError);
   this.emit('connect');
 };
 
@@ -198,8 +198,8 @@ Manager.prototype.onMessage = function(msg){
 
 Manager.prototype.onError = function(err){
   debug('connect error');
-  this.socket.onopen = noop;
-  this.socket.onerror = noop;
+  this.socket.on('open', this.onOpen);
+  this.socket.on('error', this.onError);
   this.emit('connect_error', err);
 };
 
