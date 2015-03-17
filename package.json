@@ -10,6 +10,6 @@
     "engine.io-client": "1.5.1",
     "json3": "3.3.2",
     "mongo-query": "0.5.7",
-    "superagent": "0.15.4"
+    "superagent": "0.21.0"
   }
 }
