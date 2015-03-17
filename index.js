@@ -43,6 +43,12 @@ Manager.instances = [];
 function Manager(url, opts){
   if (!(this instanceof Manager)) return new Manager(url, opts);
 
+  // bind callback functions to `this`
+  this.onOpen = this.onOpen.bind(this);
+  this.onClose = this.onClose.bind(this);
+  this.onMessage = this.onMessage.bind(this);
+  this.onError = this.onError.bind(this);
+
   opts = opts || {};
   this.agent = opts.agent || false;
   this.headers = opts.headers || {};
@@ -62,12 +68,6 @@ function Manager(url, opts){
   // keep track of the instance
   Manager.instances.push(this);
   Manager.emit('instance', this);
-
-  // bind callback functions to `this`
-  this.onOpen = this.onOpen.bind(this);
-  this.onClose = this.onClose.bind(this);
-  this.onMessage = this.onMessage.bind(this);
-  this.onError = this.onError.bind(this);
 }
 
 /**
