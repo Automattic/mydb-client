@@ -1,4 +1,12 @@
 
+3.7.0 / 2015-03-16
+==================
+
+  * package: add some missing fields
+  * update to use v1 engine.io-client API (#29, @TooTallNate)
+  * package: update "superagent" to v0.21.0
+  * package: update "engine.io-client" to v1.5.1
+
 3.6.0 / 2015-03-12
 ==================
 
