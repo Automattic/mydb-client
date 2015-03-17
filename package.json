@@ -4,11 +4,11 @@
   "version": "3.6.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/Automattic/mydb-client.git"
+    "url": "git://github.com/cloudup/mydb-client.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Automattic/mydb-client/issues"
+    "url": "https://github.com/cloudup/mydb-client/issues"
   },
   "dependencies": {
     "component-clone": "0.2.2",
