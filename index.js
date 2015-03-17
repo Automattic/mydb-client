@@ -88,7 +88,7 @@ Manager.prototype.reconnect = function(url){
   if (!url && this.url) url = this.url;
 
   if (this.socket) {
-    this.socket.off('open' this.onOpen);
+    this.socket.off('open', this.onOpen);
     this.socket.off('close', this.onClose);
     this.socket.off('message', this.onMessage);
     this.socket.off('error', this.onError);
@@ -198,8 +198,8 @@ Manager.prototype.onMessage = function(msg){
 
 Manager.prototype.onError = function(err){
   debug('connect error');
-  this.socket.on('open', this.onOpen);
-  this.socket.on('error', this.onError);
+  this.socket.off('open', this.onOpen);
+  this.socket.off('error', this.onError);
   this.emit('connect_error', err);
 };
 
