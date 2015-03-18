@@ -52,6 +52,7 @@ function Manager(url, opts){
   opts = opts || {};
   this.agent = opts.agent || false;
   this.headers = opts.headers || {};
+  this.baseURL = opts.baseURL || null;
   this.connected = false;
   this.subscriptions = {};
   this.bufferedOps = {};
