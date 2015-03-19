@@ -1,4 +1,10 @@
 
+4.0.0 / 2015-03-19
+==================
+
+  * remove `Manager.instances` array
+  * add a `baseURL` option to resolve Document instances against
+
 3.7.1 / 2015-03-17
 ==================
 

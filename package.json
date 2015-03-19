@@ -1,7 +1,7 @@
 {
   "name": "mydb-client",
   "description": "MyDB client component",
-  "version": "3.7.1",
+  "version": "4.0.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/cloudup/mydb-client.git"
