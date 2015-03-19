@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+var resolve = require('url/').resolve;
 var query = require('mongo-query');
 var request = require('superagent');
 var dot = require('dot-component');
@@ -319,10 +320,13 @@ Document.prototype.load = function(url, fn){
       debug('loading %s with headers %j', url, manager.headers);
     }
 
-    // if in node, try to prefix the url if relative
-    if ('undefined' != typeof process && '/' == url[0]) {
-      url = (socket.secure ? 'https' : 'http') + '://' +
-        socket.hostname + ':' + socket.port + url;
+    // prefix the base url if relative
+    if ('/' == url[0]) {
+      // compute absolute URL based on `baseURL` property,
+      // otherwise default to relative to the mydb Socket URL
+      var base = manager.baseURL || (socket.secure ? 'https' : 'http') + '://' +
+          socket.hostname + ':' + socket.port + url;
+      url = resolve(base, url);
     }
 
     // keep track of current url
