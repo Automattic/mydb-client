@@ -24,12 +24,6 @@ module.exports = Manager;
 Emitter(Manager);
 
 /**
- * Expose instances.
- */
-
-Manager.instances = [];
-
-/**
  * Manager constructor.
  *
  * Options:
@@ -66,8 +60,7 @@ function Manager(url, opts){
 
   this.open(url);
 
-  // keep track of the instance
-  Manager.instances.push(this);
+  // notify any interested listeners of new Manager instance
   Manager.emit('instance', this);
 }
 
