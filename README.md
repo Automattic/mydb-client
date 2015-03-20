@@ -5,8 +5,10 @@
 ## Installation
 
 ```
-$ component install cloudup/mydb-client
+$ npm install mydb-client
 ```
+
+Compile with browserify.
 
 ## Example
 
@@ -19,7 +21,7 @@ mydb.get('/woot/woot');
 
 ### Manager([url|options])
 
-  Connects to the [mydb](http://github.com/cloudup/mydb)
+  Connects to the [mydb](http://github.com/cloudup/mydb) server
   listening on `url`.
   If a parameter is not supplied it will connect to `window.location`
   Alternatively, an engine.io client options object can be supplied.
