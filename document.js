@@ -390,6 +390,20 @@ Document.prototype.load = function(url, fn){
 };
 
 /**
+ * Reloads from the previously used URL
+ *
+ * @return {Document} for chaining
+ * @api public
+ */
+
+Document.prototype.reload = function(fn){
+  if (!this.$_url) {
+    throw new Error('Cannot reload: You must call .load() first and specify a URL.');
+  }
+  return this.load(this.$_url, fn);
+}
+
+/**
  * Subscribe to a given `sid`.
  *
  * @param {Response} response
