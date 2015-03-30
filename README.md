@@ -60,6 +60,10 @@ mydb.get('/woot/woot');
   Loads a document from the given URL. If `fn` is supplied, it's passed
   to `ready`.
 
+### Document#reload([fn])
+
+  Reloads from the URL that was previously given to `Document#load`. Useful if a given endpoint can return different documents depending on the circumstances. Example: a `/me` route that returns the currently signed-in user.
+
 ### Document#ready(fn)
 
   Calls the supplied `fn` when the resource is loaded. If the resource
