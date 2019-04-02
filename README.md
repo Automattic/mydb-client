@@ -1,3 +1,5 @@
+# This repository is no longer maintained
+
 # mydb-client
 
   MyDB client component.
