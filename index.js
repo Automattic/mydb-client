@@ -5,7 +5,7 @@
 
 var Document = require('./document');
 var json = require('json3');
-var Socket = require('engine.io-client');
+var { Socket } = require('engine.io-client');
 var type = require('component-type');
 var clone = require('component-clone');
 var Emitter = require('component-emitter');

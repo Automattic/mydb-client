@@ -16,7 +16,7 @@
     "component-type": "1.1.0",
     "debug": "^4.3.4",
     "dot-component": "0.1.1",
-    "engine.io-client": "1.5.1",
+    "engine.io-client": "^6.4.0",
     "json3": "3.3.2",
     "mongo-query": "0.5.7",
     "superagent": "^8.0.9",
